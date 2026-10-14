@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>زمام | المدير الذكي</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1024' height='1024' viewBox='0 0 1024 1024'><rect width='1024' height='1024' rx='230.4' fill='#152E63'/><g transform='translate%2856.93 62.67%29 scale%284.5056%29'><path d='M64 26 H140 Q176 26 176 62 V112 Q176 148 140 148 H92 L56 178 L62 148 Q26 146 26 112 V62 Q26 26 64 26 Z' fill='#FFFFFF'/><path d='M66 90 L92 116 L136 70' fill='none' stroke='#152E63' stroke-width='16' stroke-linecap='round' stroke-linejoin='round'/><circle cx='150' cy='46' r='11' fill='#E8B23A'/></g></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#F4F6FA;--sf:#FFFFFF;--ink:#0F172A;--mut:#64748B;--mut2:#94A3B8;--line:#E6E9F0;--line2:#D3D9E4;
+  --navy:#152E63;--navy2:#0F2252;--pri:#2F5DE0;--pri2:#2448B8;--pri-bg:#EAF0FF;--gold:#E8B23A;
+  --red:#DC2626;--red-bg:#FEF2F2;--green:#1E9E6A;--green-bg:#E9F8F0;--amber:#D97706;--amber-bg:#FFF7E6;
+  --r:14px;--rs:10px;--sb:248px;
+  --font:"IBM Plex Sans Arabic","Segoe UI","Noto Sans Arabic",Tahoma,system-ui,sans-serif;
+  --sh:0 1px 2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14.5px;line-height:1.6;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;min-height:100%}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+.ic{flex:none;display:block}
+.num,.stat b,.dnav span,.rt td{font-variant-numeric:tabular-nums}
+
+/* shell */
+.shell{display:flex;min-height:100vh}
+.sb{width:var(--sb);flex:none;background:var(--navy);color:#fff;display:flex;flex-direction:column;padding:22px 14px 16px;position:sticky;top:0;height:100vh}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:0 10px 20px}
+.sb-brand .logo{width:34px;height:34px}
+.sb-nav{display:flex;flex-direction:column;gap:2px}
+.sb-nav button{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:rgba(255,255,255,.72);font-weight:500;font-size:14.5px;text-align:start;transition:.15s;width:100%}
+.sb-nav button:hover{background:rgba(255,255,255,.08);color:#fff}
+.sb-nav button.on{background:rgba(255,255,255,.14);color:#fff;font-weight:600}
+.sb-nav em{font-style:normal;margin-inline-start:auto;background:var(--red);color:#fff;border-radius:99px;font-size:11px;font-weight:700;padding:0 7px;line-height:18px}
+.sb-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.sb-status{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.07);border-radius:10px;padding:10px 12px;font-size:12px;color:rgba(255,255,255,.7)}
+.sb-status b{font-weight:600;display:block;color:#fff;font-size:13px}
+.sb-status .dot{width:8px;height:8px}
+.sb-status button{margin-inline-start:auto;background:#fff;color:var(--navy);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;flex:none}
+.sb-user{display:flex;align-items:center;gap:10px;padding:12px 6px 0;border-top:1px solid rgba(255,255,255,.1)}
+.sb-user div{flex:1;min-width:0}
+.sb-user b{display:block;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user small{display:block;font-size:12px;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user .icbtn{color:rgba(255,255,255,.7);width:34px;height:34px}
+.sb-user .icbtn:hover{background:rgba(255,255,255,.12);color:#fff}
+.mainCol{flex:1;min-width:0;display:flex;flex-direction:column}
+.mtop{display:none}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:30px 36px 60px}
+.wrap.narrow{max-width:780px}
+.ph{display:flex;align-items:flex-start;gap:16px;margin-bottom:22px}
+.ph>div{flex:1;min-width:0}
+.pt{font-size:22px;font-weight:700;line-height:1.3;letter-spacing:-.2px}
+.ps{color:var(--mut);margin-top:2px;font-size:14px}
+.ph .acts{margin:4px 0 0;flex:none}
+.icbtn{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--mut);transition:.15s;flex:none}
+.icbtn:hover,.icbtn.on{background:#EDF0F5;color:var(--ink)}
+.tag-demo{font-size:11px;font-weight:700;color:#fff;background:var(--gold);border-radius:6px;padding:1px 7px;color:#4A3200}
+
+/* cards & lists */
+.card{background:var(--sf);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.card-h{display:flex;align-items:center;gap:8px;padding:13px 18px;border-bottom:1px solid var(--line)}
+.card-h h2{font-size:15px;font-weight:600}
+.card-h .lnk{margin-inline-start:auto}
+.card-f{padding:10px 18px;border-top:1px solid var(--line)}
+.blk{margin-top:24px}
+.blk-h{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:0 2px}
+.blk-h h2{font-size:15px;font-weight:600}
+.blk-h .lnk{margin-inline-start:auto}
+.count{background:var(--red-bg);color:var(--red);border-radius:99px;font-size:12px;font-weight:600;padding:0 8px;line-height:20px}
+.lnk{color:var(--pri);font-weight:500;font-size:13.5px}
+.lnk:hover{text-decoration:underline}
+.list{background:var(--sf);border-radius:var(--r);border:1px solid var(--line);overflow:hidden;box-shadow:var(--sh)}
+.row{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
+.row:last-child{border-bottom:0}
+.row:hover{background:#F8FAFD}
+.row-b{flex:1;min-width:0}
+.row-b b{display:block;font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-b small{display:block;color:var(--mut);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .end{color:var(--mut);font-size:13px;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.red{color:var(--red)}.green{color:var(--green)}.amber{color:var(--amber)}.mut{color:var(--mut)}
+.bg-red{background:var(--red)}.bg-green{background:var(--green)}.bg-amber{background:#F5A524}.bg-gray{background:#C9CFDA}
+.empty{padding:34px 16px;text-align:center;color:var(--mut);font-size:14px}
+.empty .ei{width:44px;height:44px;border-radius:50%;background:var(--green-bg);color:var(--green);display:grid;place-items:center;margin:0 auto 10px}
+.empty .ei.gray{background:#EEF1F6;color:var(--mut2)}
+.empty .btn{margin-top:12px}
+.gh{font-size:12px;color:var(--mut);font-weight:600;margin:22px 4px 8px;letter-spacing:.2px}
+.gh:first-child{margin-top:0}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:3px 10px;font-size:12.5px;font-weight:500;background:#F1F3F7;color:var(--mut);white-space:nowrap}
+.pill.green{background:var(--green-bg);color:var(--green)}.pill.amber{background:var(--amber-bg);color:var(--amber)}.pill.red{background:var(--red-bg);color:var(--red)}
+.who{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mut);white-space:nowrap}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:10px;font-weight:600;font-size:14px;transition:.15s;white-space:nowrap;text-decoration:none;border:1px solid transparent}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.55;cursor:default}
+.btn-pri{background:var(--pri);color:#fff}.btn-pri:hover{background:var(--pri2)}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#178A5B}
+.btn-soft{background:var(--pri-bg);color:var(--pri)}.btn-soft:hover{background:#DCE5FF}
+.btn-ghost{background:var(--sf);color:var(--ink);border-color:var(--line2)}.btn-ghost:hover{background:#F5F7FB}
+.btn-danger{background:var(--red-bg);color:var(--red)}
+.btn-sm{padding:6px 12px;font-size:13px;border-radius:8px}
+.btn-block{width:100%}
+
+/* setup checklist */
+.setup{background:var(--sf);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:20px;box-shadow:var(--sh)}
+.setup h3{font-size:14.5px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--navy)}
+.setup h3 .ic{color:var(--gold)}
+.setup ol{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.setup li{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:13.5px;min-height:52px}
+.setup li.ok{background:var(--green-bg);border-color:transparent;color:#14532D}
+.setup li .n{width:24px;height:24px;border-radius:50%;background:var(--pri-bg);color:var(--pri);font-weight:700;font-size:12px;display:grid;place-items:center;flex:none}
+.setup li.ok .n{background:var(--green);color:#fff}
+.setup li>span:not(.n){flex:1;min-width:0}
+.setup li .btn{padding:5px 11px;font-size:12.5px;flex:none}
+
+/* home */
+.ask{display:flex;align-items:center;gap:12px;background:var(--sf);border:1px solid var(--line);border-radius:14px;padding:7px;padding-inline-start:16px;box-shadow:var(--sh);transition:.15s}
+.ask:focus-within{border-color:var(--pri);box-shadow:0 0 0 4px rgba(47,93,224,.12)}
+.ask>.ic{color:var(--pri)}
+.ask input{flex:1;min-width:0;border:0;outline:0;padding:10px 0;font-size:15px;background:transparent}
+.ask input::placeholder{color:var(--mut2)}
+.ask-go{height:40px;padding:0 16px;border-radius:10px;background:var(--navy);color:#fff;display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;flex:none}
+.ask-go:hover{background:var(--navy2)}
+.ask-go:disabled{opacity:.5}
+.ask-hint{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;color:var(--mut2);font-size:12.5px;padding:0 2px}
+.ask-hint button{background:var(--sf);border:1px solid var(--line);border-radius:99px;padding:3px 11px;color:var(--mut);font-size:12.5px;font-weight:500;transition:.12s}
+.ask-hint button:hover{border-color:var(--pri);color:var(--pri)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:22px}
+.stat{background:var(--sf);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;text-align:start;display:flex;align-items:center;gap:14px;box-shadow:var(--sh);transition:.15s;min-width:0}
+button.stat:hover{border-color:var(--line2);transform:translateY(-1px)}
+.si{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none}
+.si-green{background:var(--green-bg);color:var(--green)}.si-pri{background:var(--pri-bg);color:var(--pri)}.si-red{background:var(--red-bg);color:var(--red)}.si-gold{background:#FFF4D6;color:#A86E00}.si-gray{background:#EEF1F6;color:var(--mut)}
+.sv{flex:1;min-width:0}
+.sv>span{display:block;color:var(--mut);font-size:12.5px}
+.sv>b{display:block;font-size:23px;font-weight:700;line-height:1.25;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sv>b i{font-style:normal;font-size:14px;color:var(--mut2);font-weight:500}
+.home2{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:18px;margin-top:22px;align-items:start}
+.av{border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;flex:none;line-height:1}
+
+/* team */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.tcard{background:var(--sf);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh);cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:12px}
+.tcard:hover{border-color:var(--line2);transform:translateY(-1px)}
+.tcard .th{display:flex;align-items:center;gap:12px}
+.tcard .th div{flex:1;min-width:0}
+.tcard .th b{display:block;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tcard .th small{display:block;color:var(--mut);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tcard .tm{display:flex;gap:12px;font-size:12.5px;color:var(--mut);align-items:center}
+.tcard .tm b{color:var(--ink);font-weight:600}
+.tcard .ta{display:flex;gap:8px;margin-top:2px}
+.tcard .ta .btn{flex:1}
+
+/* tasks & toolbars */
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.seg{display:inline-flex;gap:2px;background:#E9ECF2;border-radius:10px;padding:3px}
+.seg button{padding:6px 13px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--mut);transition:.12s}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(15,23,42,.1);font-weight:600}
+.seg button i{font-style:normal;color:var(--mut2);margin-inline-start:5px;font-size:12px}
+.sel{appearance:none;-webkit-appearance:none;border:1px solid var(--line2);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat left 12px center;padding:7px 13px;padding-inline-end:32px;border-radius:9px;font-weight:500;font-size:13.5px;outline:0;cursor:pointer}
+.sel:focus{border-color:var(--pri)}
+.cb{width:22px;height:22px;border-radius:50%;border:1.6px solid #C3CAD6;display:grid;place-items:center;color:transparent;flex:none;transition:.15s;background:#fff}
+.cb:hover{border-color:var(--green);color:var(--green)}
+.row.done .cb{background:var(--green);border-color:var(--green);color:#fff}
+.row.done .row-b b{color:var(--mut2);text-decoration:line-through;font-weight:500}
+.dnav{display:inline-flex;align-items:center;gap:2px;background:#fff;border:1px solid var(--line2);border-radius:9px;padding:1px}
+.dnav span{font-weight:600;font-size:13.5px;padding:0 6px;min-width:130px;text-align:center}
+.dnav .icbtn{width:32px;height:32px;border-radius:7px}
+.money3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:4px}
+
+/* report doc */
+.doc{background:var(--sf);border:1px solid var(--line);border-radius:var(--r);padding:28px 28px;box-shadow:var(--sh)}
+.doc-h{display:flex;align-items:flex-start;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.doc-h h2{font-size:18px;font-weight:700;line-height:1.35}
+.doc-h small{display:block;color:var(--mut);font-size:13px}
+.doc section{margin-top:20px}
+.doc h4{font-size:12px;font-weight:600;color:var(--mut);margin-bottom:6px;letter-spacing:.3px}
+.doc p{margin:2px 0;font-size:14px}
+.doc footer{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--mut2)}
+.rt{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0}
+.rt th{font-weight:600;color:var(--mut);padding:6px 4px;text-align:start;border-bottom:1px solid var(--line);font-size:12.5px}
+.rt td{padding:8px 4px;border-bottom:1px solid var(--line)}
+.rt tr:last-child td{border-bottom:0}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+/* forms */
+.inp{width:100%;border:1px solid var(--line2);border-radius:10px;padding:10px 13px;background:#fff;outline:0;transition:.15s;font-size:14.5px}
+.inp:focus{border-color:var(--pri);box-shadow:0 0 0 4px rgba(47,93,224,.1)}
+textarea.inp{resize:vertical;min-height:64px}
+.fld{margin-bottom:18px}
+.fld>label{display:block;font-weight:500;font-size:13px;color:var(--mut);margin-bottom:7px}
+.fld.err .inp,.fld.err .chips{outline:2px solid var(--red);outline-offset:3px;border-radius:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{padding:7px 13px;border-radius:99px;background:#F1F3F7;font-size:13.5px;font-weight:500;color:var(--ink);border:1.5px solid transparent;transition:.12s}
+.chip:hover{background:#E8EBF1}
+.chip.on{background:var(--pri-bg);color:var(--pri);border-color:var(--pri)}
+.pchip{display:inline-flex;align-items:center;gap:7px;padding:4px;padding-inline-end:13px;border-radius:99px;background:#F1F3F7;font-weight:500;font-size:13.5px;border:1.5px solid transparent;transition:.12s}
+.pchip.on{background:var(--pri-bg);border-color:var(--pri);color:var(--pri)}
+.amt{display:flex;align-items:center;justify-content:center;gap:8px;border-bottom:1.5px solid var(--line);padding:6px 0 10px;margin-bottom:20px}
+.amt:focus-within{border-color:var(--pri)}
+.amt input{border:0;outline:0;font-size:40px;font-weight:700;text-align:center;width:100%;max-width:260px;background:transparent}
+.amt span{font-size:24px;font-weight:600;color:var(--mut2)}
+.kind{display:grid;grid-template-columns:1fr 1fr;background:#E9ECF2;border-radius:10px;padding:3px;margin-bottom:18px}
+.kind button{padding:8px;border-radius:8px;font-weight:500;color:var(--mut)}
+.kind button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(15,23,42,.1);font-weight:600}
+.note{background:var(--amber-bg);color:#7C4A00;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:16px}
+.inline-date{width:auto;padding:6px 10px;font-size:13.5px}
+.switch{width:40px;height:23px;border-radius:99px;background:#CBD2DE;position:relative;transition:.2s;flex:none}
+.switch::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.switch.on{background:var(--green)}
+.switch.on::after{inset-inline-start:20px}
+.frow{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line)}
+.frow:last-child{border-bottom:0}
+.frow>label{flex:1;font-weight:500;font-size:14px;min-width:0}
+.frow .inp{max-width:120px;padding:7px 10px;text-align:center}
+.frow .inp[inputmode=decimal],.amt input,#modal input[inputmode=decimal]{font-variant-numeric:tabular-nums;direction:ltr}
+.card-f p{margin:0 !important}
+.ck{display:flex;align-items:center;gap:11px;font-weight:500;font-size:14px;padding:11px 13px;background:var(--green-bg);border-radius:10px;cursor:pointer;margin-top:4px}
+.ck input{width:18px;height:18px;accent-color:var(--green);flex:none;margin:0}
+.ck small{display:block;font-weight:400;color:var(--mut);font-size:12.5px}
+.qrbox{display:grid;place-items:center;min-height:256px;background:#F4F6FA;border-radius:14px;margin:4px 0 10px;padding:12px;text-align:center}
+.qrbox img{width:240px;height:240px;image-rendering:pixelated;border-radius:10px;background:#fff;padding:8px}
+.steps{margin:0 0 16px;padding-inline-start:20px;font-size:14px;line-height:1.9}
+
+/* modal */
+#modal .ov{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;animation:fade .15s}
+.sheet{background:#fff;border-radius:18px;width:min(520px,100%);max-height:90vh;overflow:auto;padding:24px;animation:pop .2s;box-shadow:0 24px 60px rgba(15,23,42,.25)}
+.m-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:20px}
+.m-h h3{font-size:18px;font-weight:700;line-height:1.35}
+.m-h small{color:var(--mut);font-size:13px}
+.m-f{margin-top:22px;display:flex;flex-direction:column;gap:8px}
+.why{background:var(--pri-bg);border-radius:12px;padding:12px 14px;margin:14px 0}
+.why small{color:var(--pri);font-weight:600;font-size:12px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;padding:13px;border-radius:12px;text-align:start;transition:.12s}
+.opt:hover{background:#F5F7FB}
+.opt .oi{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none}
+.opt b{display:block;font-size:15px}
+.opt small{color:var(--mut);font-size:12.5px}
+.oi-pri{background:var(--pri-bg);color:var(--pri)}.oi-green{background:var(--green-bg);color:var(--green)}
+.oi-red{background:var(--red-bg);color:var(--red)}.oi-amber{background:var(--amber-bg);color:var(--amber)}
+.mini{display:flex;flex-wrap:wrap;gap:6px}
+.mini span{font-size:12px;font-weight:600;padding:3px 9px;border-radius:7px}
+.m-green{background:var(--green-bg);color:var(--green)}.m-amber{background:var(--amber-bg);color:var(--amber)}.m-red{background:var(--red-bg);color:var(--red)}.m-gray{background:#F1F3F7;color:var(--mut)}
+.sub-h{font-size:12px;font-weight:600;color:var(--mut);margin:22px 0 8px}
+
+/* employee */
+.top.emp-top{position:sticky;top:0;z-index:30;background:var(--navy);color:#fff;font-weight:500;font-size:14px}
+.emp-top .top-in{max-width:780px;margin:0 auto;height:54px;display:flex;align-items:center;gap:12px;padding:0 20px}
+.emp-top .btn-pri{background:#fff;color:var(--navy)}
+.big-btn{padding:16px;font-size:16px;border-radius:14px;width:100%}
+
+/* bottom nav + toast */
+.bnav{display:none}
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:70;display:flex;flex-direction:column;gap:8px;align-items:center;width:max-content;max-width:calc(100vw - 24px)}
+.tst{background:#0F172A;color:#fff;padding:11px 16px;border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.28);display:flex;gap:14px;align-items:center;font-weight:500;font-size:13.5px;animation:up .22s}
+.tst.err{background:#B42318}
+.tst-a{background:rgba(255,255,255,.16);color:#fff;border-radius:8px;padding:5px 11px;font-weight:600;font-size:13px;white-space:nowrap}
+#printArea{display:none}
+
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+@media (max-width:960px){
+  .sb{display:none}
+  .hide-m{display:none}
+  .mtop{display:flex;align-items:center;gap:8px;height:56px;padding:0 14px;background:var(--sf);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+  .mtop .logo{width:28px;height:28px}
+  .mtop .sp{flex:1}
+  .wrap{padding:18px 16px 110px}
+  .pt{font-size:20px}
+  .ph{margin-bottom:16px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+  .stat{padding:13px 14px;gap:11px}
+  .si{width:36px;height:36px}
+  .sv>b{font-size:20px}
+  .home2{grid-template-columns:1fr;gap:14px;margin-top:18px}
+  .setup ol{grid-template-columns:1fr}
+  .money3{gap:10px}
+  .tgrid{grid-template-columns:1fr}
+  .doc{padding:20px 16px}
+  .dnav span{min-width:110px;font-size:13px}
+  .bnav{display:grid;position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);grid-template-columns:repeat(5,1fr);align-items:end;padding:6px 6px calc(8px + env(safe-area-inset-bottom));z-index:30}
+  .bnav button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;color:var(--mut2);font-weight:500;padding:4px 0;position:relative}
+  .bnav button.on{color:var(--pri);font-weight:600}
+  .bnav em{font-style:normal;position:absolute;top:0;left:50%;margin-left:4px;background:var(--red);color:#fff;border-radius:99px;font-size:10.5px;font-weight:700;padding:0 5px;line-height:16px}
+  .bnav .plus{width:50px;height:50px;border-radius:16px;background:var(--navy);color:#fff;display:grid;place-items:center;margin:-22px auto 0;box-shadow:0 8px 20px rgba(21,46,99,.35)}
+  #toast{bottom:96px}
+  #modal .ov{align-items:flex-end;padding:0}
+  .sheet{border-radius:20px 20px 0 0;max-height:92vh;padding:22px 18px calc(22px + env(safe-area-inset-bottom));animation:up .25s}
+}
+@media print{
+  body *{visibility:hidden}
+  #printArea,#printArea *{visibility:visible}
+  #printArea{display:block;position:absolute;top:0;left:0;right:0;padding:24px}
+  #printArea .doc{border:0;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal"></div>
+<div id="toast"></div>
+<div id="printArea"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===================== constants ===================== */
+const KEY = 'zimam_v1';
+const CATS = {
+  in: ['اشتراك شهري','اشتراك يومي','تأجير قاعة','دورة','منحة','أخرى'],
+  out: ['إيجار','رواتب','كهرباء','إنترنت','تسويق','صيانة','مستلزمات','أخرى']
+};
+const PALETTE = ['#3B5BDB','#7950F2','#D6336C','#E8590C','#2F9E44','#1098AD','#E03131','#5C7CFA','#0CA678'];
+const ICONS = {
+  home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  tasks:'<rect x="3" y="3" width="18" height="18" rx="5"/><path d="m8 12 3 3 5-6"/>',
+  team:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14.7c1.9.7 3.1 2.5 3.5 5.3"/>',
+  report:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  send:'<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/>',
+  arrow:'<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  prev:'<path d="m9 18 6-6-6-6"/>',
+  next:'<path d="m15 18-6-6 6-6"/>',
+  spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/>',
+  up:'<path d="M12 19V5M5 12l7-7 7 7"/>',
+  down:'<path d="M12 5v14M19 12l-7 7-7-7"/>',
+  flag:'<path d="M4 21V4h12l-2 4 2 4H4"/>',
+  chev:'<path d="m15 18-6-6 6-6"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m3 7 9 6 9-6"/>',
+  trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  db:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  wallet:'<path d="M3 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6h-5a2 2 0 0 0 0 4h5"/>',
+  alert:'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 17.5a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+  checkc:'<circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 5-5"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  pause:'<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
+};
+
+/* ===================== utils ===================== */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parseD = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const today = () => ymd(new Date());
+const addDays = (s,n) => { const d = parseD(s); d.setDate(d.getDate()+n); return ymd(d); };
+const diffDays = (a,b) => Math.round((parseD(a)-parseD(b))/864e5);
+const nowHM = () => { const d=new Date(); return pad(d.getHours())+':'+pad(d.getMinutes()); };
+const toMin = hm => { if(!hm) return null; const [h,m]=hm.split(':').map(Number); return h*60+m; };
+const m2hm = m => pad(Math.floor(m/60))+':'+pad(m%60);
+const nowMin = () => toMin(nowHM());
+const dow = s => parseD(s).getDay();
+const isWorkday = s => { const w = dow(s); return w!==5 && w!==6; };
+const weekStart = s => addDays(s, -dow(s));
+const fmtN = n => Math.round(n||0).toLocaleString('en-US');
+const money = n => fmtN(n)+' ₪';
+const pct = x => Math.round((x||0)*100)+'%';
+let AR_LONG, AR_SHORT;
+try { AR_LONG = new Intl.DateTimeFormat('ar-u-nu-latn',{weekday:'long',day:'numeric',month:'long'}); AR_SHORT = new Intl.DateTimeFormat('ar-u-nu-latn',{day:'numeric',month:'short'}); }
+catch(e){ AR_LONG = AR_SHORT = {format:d=>ymd(d)}; }
+const fmtDate = s => AR_LONG.format(parseD(s));
+const fmtShort = s => s ? AR_SHORT.format(parseD(s)) : '';
+const WD = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const WDS = ['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+const dayword = n => n===1?'يوم':n===2?'يومين':(n>=3&&n<=10)?n+' أيام':n+' يوم';
+const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+const toLatinDigits = s => String(s).replace(/[٠-٩]/g, d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g, d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+function ic(n, s){ s = s||20; return '<svg class="ic" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICONS[n]||'')+'</svg>'; }
+function av(m, s){ s = s||36; m = m||{}; return '<span class="av" style="width:'+s+'px;height:'+s+'px;background:'+(m.color||'#9CA3AF')+';font-size:'+Math.round(s*0.42)+'px">'+esc((m.short||m.name||'؟').charAt(0))+'</span>'; }
+const BOT_DEFAULT = (/^https?:$/.test(location.protocol) && /\/app\/?$/.test(location.pathname)) ? location.origin + location.pathname.replace(/\/app\/?$/, '') : '';
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const cleanPhone = p => toLatinDigits(String(p||'')).replace(/\D/g,'');
+const isDemoPhone = p => /^9705990000\d\d$/.test(cleanPhone(p));
+const realPhone = p => { const d = cleanPhone(p); return d.length>=10 && d.length<=15 && d[0]!=='0' && !isDemoPhone(d); };
+
+/* ===================== seed ===================== */
+const RULES = [{type:'تأخير دوام', amount:5},{type:'غياب بدون عذر', amount:100},{type:'تأخير مهمة', amount:10},{type:'مشكلة في العمل', amount:0},{type:'استهتار', amount:30}];
+const ruleAmt = t => { const r = S.rules.find(x=>x.type===t); return r ? Number(r.amount)||0 : 0; };
+function demoSeed(){
+  const t = today();
+  const team = [
+    {id:'m1',  name:'سامي الأحمد',  short:'سامي',  role:'المدير العام',          phone:'970599000001', active:true, manager:true, color:'#3B5BDB', aliases:['سامي']},
+    {id:'e1', name:'أحمد خالد', short:'أحمد',  role:'العمليات والمالية',      phone:'970599000002', active:true, color:'#7950F2', aliases:['أحمد']},
+    {id:'e2',name:'سارة يوسف',  short:'سارة', role:'تجربة العملاء والمبيعات', phone:'970599000003', active:true, color:'#D6336C', aliases:['سارة','ساره']},
+    {id:'e3',name:'ليان حسن', short:'ليان',  role:'التسويق',               phone:'970599000004', active:true, color:'#E8590C', aliases:['ليان']},
+    {id:'e4',   name:'يزن علي',   short:'يزن',   role:'الاستقبال',             phone:'970599000005', active:true, color:'#2F9E44', aliases:['يزن']},
+    {id:'e5',  name:'نور سالم',      short:'نور',   role:'الدعم الفني',            phone:'970599000006', active:true, color:'#1098AD', aliases:['نور']}
+  ];
+  const priorities = [
+    {id:'p1', title:'الاحتفاظ بالعملاء', goal:'رفع متوسط الزيارات لكل عميل من 1.4 إلى 2.0', owner:'e2', due:addDays(t,45)},
+    {id:'p2', title:'اقتصاديات الوحدة',  goal:'نعرف كم يكلفنا العميل وكم يدفع لنا', owner:'e1', due:addDays(t,45)},
+    {id:'p3', title:'التموضع والتسويق',  goal:'رسالة واحدة واضحة على كل القنوات', owner:'e3', due:addDays(t,75)}
+  ];
+  const untilSun = ((7 - dow(t)) % 7) || 7;
+  const T = (id, emp, title, why, pri, due, status, created, extra) => Object.assign({id, emp, title, why, pri, due:addDays(t,due), status, created:addDays(t,created), doneAt:null, notes:'', reminders:0}, extra||{});
+  const tasks = [
+    T('T-001','e2','اتصال بـ 3 عملاء لم يعودوا','نعرف ليش 71% من العملاء ما بيرجعوا مرة ثانية','p1',2,'doing',-1,{notes:'أُنجزت 2 من 3'}),
+    T('T-002','e2','دليل استقبال العميل الجديد','كل عميل جديد ياخد نفس التجربة الممتازة من أول دقيقة','p1',5,'new',-1),
+    T('T-003','e1','إضافة عمود "مصدر العميل" في السجل المالي','بدونه ما بنعرف أي قناة تسويق بتجيب عملاء','p2',-1,'done',-3,{doneAt:addDays(t,-1)}),
+    T('T-004','e1','جمع فواتير تسويق الشهر الماضي','أساس حساب تكلفة العميل الواحد','p2',2,'doing',-1),
+    T('T-005','e1','محادثة مع شركة لحجز مقاعد لفريقها','دخل ثابت يقلل اعتمادنا على التمويل','p2',3,'new',-1),
+    T('T-006','e3','تحديث البايو بالرسالة الجديدة','الناس لسا بتشوفنا "مساحة عمل" بس','p3',0,'doing',-1),
+    T('T-007','e3','3 منشورات بالرسالة الجديدة','نختبر تجاوب الطلاب والفريلانسرز','p3',3,'new',-1),
+    T('T-008','e3','سجل يومي لكل عميل محتمل ومصدره','نحسب تكلفة كل عميل بدقة','p2',5,'new',0),
+    T('T-009','e4','تحديث لوحة الأسعار عند المدخل','الأسعار القديمة بتلخبط العملاء الجدد',null,-2,'doing',-6,{reminders:2}),
+    T('T-010','e5','تركيب UPS للراوتر الرئيسي','انقطاع الإنترنت يعني خسارة عملاء',null,-4,'done',-8,{doneAt:addDays(t,-5)}),
+    T('T-011','m1','اجتماع الفريق الأسبوعي','الاجتماع الوحيد في الأسبوع: الأرقام والقرارات',null,untilSun,'new',-1),
+    T('T-012','m1','جلسة فردية مع أحمد وسارة وليان','كل واحد بيحكي بصراحة لما يكون لحاله',null,2,'new',-1),
+    T('T-013','e2','تقرير نتائج المكالمات','المدير بيقرأه قبل اجتماع الأحد','p1',1,'new',-1),
+    T('T-014','e5','فحص سرعة الإنترنت يومياً وتسجيلها','نكتشف الأعطال قبل ما يشتكي العملاء',null,-1,'new',-3)
+  ];
+  const days = []; let d = addDays(t,-1);
+  while(days.length<5){ if(isWorkday(d)) days.unshift(d); d = addDays(d,-1); }
+  const pat = {hazem:[40,45,40,55,38], ghaida:[55,65,39,60,50], sumaya:[70,58,62,55,50], joy:[30,35,50,28,32], reem:[80,null,105,95,85]};
+  const attendance = [];
+  days.forEach((day,i)=>{
+    Object.keys(pat).forEach((id,j)=>{
+      const p = pat[id][i]; if(p==null) return;
+      const inM = 8*60+p; const outM = inM + 455 + ((i*7+j*11)%40);
+      attendance.push({date:day, emp:id, in:m2hm(inM), out:m2hm(outM)});
+    });
+  });
+  [['e1','08:41'],['e2','08:52'],['e4','08:29'],['e3','09:12']].forEach(([id,tm])=>attendance.push({date:t, emp:id, in:tm, out:null}));
+  const violations = [
+    {id:'v1', date:days[2], emp:'e5', type:'تأخير 31-60 دقيقة', desc:'دخول 09:45', amount:5, status:'confirmed'},
+    {id:'v2', date:days[3], emp:'e5', type:'تأخير 31-60 دقيقة', desc:'دخول 09:35', amount:5, status:'confirmed'},
+    {id:'v3', date:days[1], emp:'e5', type:'غياب بدون عذر', desc:'لم تسجّل دخولاً ولم تبلّغ', amount:100, status:'review'}
+  ];
+  const F = (off, kind, cat, amount, note, by, extra) => Object.assign({id:'f'+off+'_'+cat.length+'_'+amount, date:addDays(t,off), kind, cat, amount, note, by}, extra||{});
+  const finance = [
+    F(-27,'in','منحة',4000,'دفعة مشروع الطلاب','أحمد'), F(-27,'out','إيجار',2500,'إيجار الشهر','أحمد'),
+    F(-26,'in','اشتراك شهري',350,'محمد س.','يزن'), F(-25,'out','إنترنت',300,'اشتراك الشهر','أحمد'),
+    F(-24,'in','اشتراك يومي',75,'3 زوار','يزن'), F(-23,'in','تأجير قاعة',200,'ورشة 3 ساعات','يزن'),
+    F(-22,'out','تسويق',400,'إعلانات ممولة','ليان'), F(-20,'in','دورة',900,'تصميم جرافيك','أحمد'),
+    F(-19,'out','كهرباء',450,'فاتورة الشهر','أحمد'), F(-18,'in','اشتراك شهري',350,'سارة م.','يزن'),
+    F(-17,'in','اشتراك يومي',50,'زائران','يزن'), F(-15,'in','اشتراك شهري',350,'خالد ر.','يزن'),
+    F(-13,'out','رواتب',3200,'دفعة أولى','أحمد'), F(-12,'in','تأجير قاعة',300,'محاضرة','يزن'),
+    F(-11,'in','دورة',600,'Front-End','أحمد'), F(-10,'out','صيانة',150,'UPS للراوتر','نور'),
+    F(-8,'in','اشتراك يومي',100,'4 زوار','يزن'), F(-6,'in','اشتراك شهري',350,'لينا ح.','يزن'),
+    F(-5,'out','مستلزمات',120,'قهوة وورق','يزن'), F(-4,'in','تأجير قاعة',250,'اجتماع شركة','يزن'),
+    F(-3,'in','دورة',600,'Front-End، دفعة ثانية','أحمد'), F(-2,'in','اشتراك يومي',75,'3 زوار','يزن'),
+    F(-2,'out','تسويق',200,'تصوير محتوى','ليان'), F(-1,'in','اشتراك شهري',350,'أحمد ع.','يزن'),
+    F(-1,'in','اشتراك يومي',50,'زائران','يزن'), F(0,'in','اشتراك يومي',50,'زائران','يزن'),
+    F(0,'in','تأجير قاعة',250,'ورشة مسائية','يزن'), F(0,'out','مستلزمات',480,'كراسي إضافية','يزن',{pending:true})
+  ];
+  const L = (dOff, tm, a, e, dd) => ({t:addDays(t,dOff)+' '+tm, a, e, d:dd});
+  const log = [
+    L(-1,'15:20','إنجاز مهمة','أحمد','T-003 عمود مصدر العميل'),
+    L(0,'08:29','تسجيل دخول','يزن','تلقائي من أول رسالة'),
+    L(0,'08:41','تسجيل دخول','أحمد','في الوقت'),
+    L(0,'08:52','تسجيل دخول','سارة','في الوقت'),
+    L(0,'09:00','تذكير دخول','ليان، نور','لم يسجّلا بعد'),
+    L(0,'09:12','تسجيل دخول','ليان','تأخير 12 دقيقة ضمن السماح'),
+    L(0,'09:30','إرسال مهام اليوم','الفريق','5 موظفين، كل مهمة مع السبب والموعد'),
+    L(0,'10:05','تصعيد للمدير','يزن','T-009 متأخرة يومين بعد تذكيرين')
+  ];
+  const weekly = {}; weekly[weekStart(t)] = {retention:0.38, newClients:4, downtime:1, pipeline:1};
+  return {
+    v:2, created:t, team, priorities, tasks, attendance, violations, finance, log, weekly,
+    db:{pat:'', base:'', table:'People', botUrl:BOT_DEFAULT, botSecret:''},
+    targets:{revenue:6000, retention:0.40, newClients:5, downtime:4, pipeline:1},
+    settings:{start:'09:00', grace:30, expenseLimit:370, company:'شركة تجريبية', followups:'group', summaryAt:'18:00', eod:'19:30', remindTasks:true, remindCheckin:true, remindSummary:true},
+    rules: RULES.map(r=>Object.assign({}, r))
+  };
+}
+
+/* ===================== state ===================== */
+function cleanSeed(){
+  const t = today();
+  const team = [
+    {id:'manager', name:'المدير', short:'المدير', role:'المدير العام', phone:'', active:true, manager:true, color:'#3B5BDB', aliases:['المدير']}
+  ];
+  const priorities = [
+    {id:'p1', title:'الاحتفاظ بالعملاء', goal:'اكتب هدف الربع هون', owner:'manager', due:addDays(t,90)},
+    {id:'p2', title:'النمو', goal:'اكتب هدف الربع هون', owner:'manager', due:addDays(t,90)},
+    {id:'p3', title:'الجودة', goal:'اكتب هدف الربع هون', owner:'manager', due:addDays(t,90)}
+  ];
+  const base = demoSeed();
+  return Object.assign(base, {v:2, created:t, team, priorities, tasks:[], attendance:[], violations:[], finance:[], weekly:{},
+    log:[{t:t+' '+nowHM(), a:'بداية', e:'المدير', d:'أهلاً بك في زمام'}],
+    settings:Object.assign({}, base.settings, {company:''}),
+    db:{pat:'', base:'', table:'People', botUrl:BOT_DEFAULT, botSecret:''}});
+}
+const DEMO = /^#demo$/.test(location.hash||'');
+const SKEY = DEMO ? KEY+'_demo' : KEY;
+let S;
+try { S = JSON.parse(localStorage.getItem(SKEY)); } catch(e){ S = null; }
+if(DEMO){ if(!S || S.v!==2 || !Array.isArray(S.team)) S = demoSeed(); }
+else if(!S || S.v!==2 || !Array.isArray(S.team)){
+  const old = S && S.db; S = cleanSeed();
+  if(old && old.botSecret){ S.db.botSecret = old.botSecret; if(old.botUrl) S.db.botUrl = old.botUrl; }
+}
+if(!S.db) S.db = {pat:'', base:'', table:'People', botUrl:BOT_DEFAULT, botSecret:''};
+function normalizeState(){
+  const base = cleanSeed();
+  ['targets','priorities','weekly','log','finance','violations','attendance','tasks','settings'].forEach(k=>{ if(S[k]==null) S[k] = base[k]; });
+  if(!S.created) S.created = today();
+  S.team.forEach(m=>{ if(!m.color) m.color = PALETTE[0]; if(!m.aliases) m.aliases = [m.short||m.name].filter(Boolean); if(!m.short) m.short = String(m.name||'').split(/\s+/)[0]; });
+  S.team.forEach(m=>{ if(m.female==null && /^(شهد|سمية|سميه|غيداء|ريم|جوي|نور|سارة|سارا|لينا|هبة|هبه|آية|ايه|دعاء|أمل|امل|رنا|ديما|مرام|ملاك|رهف|سجى|تالا|لمى|روان|ريتا|هديل|دانا|ياسمين|فاطمة|مريم|خديجة|عائشة|زينب|ندى|نهى|هناء|منى|سلمى|ليلى|سما|جنى|جود|رغد|شذى|أسماء|اسماء|إيمان|ايمان|عبير|وفاء|ولاء|آلاء|الاء|إسراء|اسراء|بيان|بتول|تسنيم|حنين|حلا|رزان|سهى|صفاء|غدير|لجين|لين|ميس|ميساء|نغم|نسرين|نيفين|هيا|يارا)$/.test(m.short||'')) m.female = true; });
+}
+normalizeState();
+if(!Array.isArray(S.rules) || S.rules.some(r=>/31-60|تسليم مهمة|التقرير اليومي/.test(r.type))){ const old = S.rules||[]; S.rules = RULES.map(r=>{ const o = old.find(x=>x.type===r.type); return {type:r.type, amount:o?o.amount:r.amount}; }); }
+S.settings = Object.assign({followups:'group', summaryAt:'18:00', eod:'19:30', remindTasks:true, remindCheckin:true, remindSummary:true}, S.settings||{});
+if(!Array.isArray(S.wtasks)) S.wtasks = [];
+if(!Array.isArray(S.issues)) S.issues = [];
+if(!S.db.botUrl) S.db.botUrl = BOT_DEFAULT;
+const ui = {view:'home', role:'manager', taskFilter:'open', taskEmp:'', rtype:'daily', rdate:today(), remp:'', fper:'month', allDec:false, dbStatus:'', botStatus:'', wa:{status:'', me:''}, stateSync:''};
+let M = {};
+function saveLocal(){ try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch(e){} }
+function save(){ S.updatedAt = Date.now(); saveLocal(); pushStateSoon(); }
+let pushST = null, pushing = false;
+function pushStateSoon(){ if(typeof db==='undefined' || !db.bot() || DEMO) return; clearTimeout(pushST); pushST = setTimeout(pushState, 1500); }
+function stateForServer(){ const c = Object.assign({}, S); c.db = {botUrl:S.db.botUrl||''}; delete c.wtasks; delete c.issues; return c; }
+async function pushState(){
+  if(!db.bot() || DEMO || pushing) return; pushing = true;
+  try { const r = await db.botFetch('/admin/state', {method:'PUT', body:{state: stateForServer()}}); if(r && r.stale){ await pullState(); } ui.stateSync = 'ok'; }
+  catch(e){ ui.stateSync = 'err'; }
+  finally { pushing = false; }
+}
+async function pullState(){
+  try {
+    const r = await db.botFetch('/admin/state'); const st = r && r.state; if(!st || !Array.isArray(st.team)) return false;
+    if(Number(st.updatedAt||0) <= Number(S.updatedAt||0)) return false;
+    const keep = S.db, wt = S.wtasks, is = S.issues;
+    S = Object.assign(st, {db: keep, wtasks: wt||[], issues: is||[]});
+    normalizeState(); saveLocal(); if(ui.role==='manager') renderKeep(); return true;
+  } catch(e){ return false; }
+}
+function commit(){ save(); render(); }
+
+/* ===================== selectors ===================== */
+const emp = id => S.team.find(m=>m.id===id) || {id, name:'غير معروف', short:'؟', color:'#9CA3AF', role:''};
+const me = () => S.team.find(m=>m.manager) || S.team[0];
+const listTeam = () => S.team.filter(m=>!m.deleted);
+const staff = () => S.team.filter(m=>m.active && !m.manager && !m.deleted);
+const activeTeam = () => S.team.filter(m=>m.active && !m.deleted);
+const pri = id => S.priorities.find(p=>p.id===id);
+const attRec = (id, d) => S.attendance.find(r=>r.emp===id && r.date===d);
+function tStatus(x){ if(x.status==='done') return 'done'; if(x.due < today()) return 'late'; return x.status; }
+const ST_LABEL = {new:'جديدة', doing:'قيد التنفيذ', done:'منجزة', late:'متأخرة'};
+const lateTasks = () => S.tasks.filter(x=>tStatus(x)==='late');
+const startOf = id => { const m = S.team.find(x=>x.id===id); return (m && m.start) || S.settings.start; };
+function classify(hm, id){ const m=toMin(hm), st=toMin(id?startOf(id):S.settings.start); if(m<=st) return 'on'; if(m<=st+S.settings.grace) return 'slight'; return 'late'; }
+const TONE = {on:'green', slight:'amber', late:'red'};
+function sumFin(kind, a, b, opt){ return S.finance.filter(f=>f.kind===kind && f.date>=a && f.date<=b && !(opt&&opt.noFund&&f.cat==='منحة')).reduce((s,f)=>s+Number(f.amount||0),0); }
+function nextTaskId(){ const n = S.tasks.reduce((mx,x)=>Math.max(mx, parseInt(String(x.id).replace(/\D/g,''),10)||0),0)+1; return 'T-'+String(n).padStart(3,'0'); }
+function addLog(a, e, d){ S.log.push({t:today()+' '+nowHM(), a, e, d}); if(S.log.length>300) S.log = S.log.slice(-300); }
+function weekly(){ const k = weekStart(today()); if(!S.weekly[k]) S.weekly[k] = {retention:null,newClients:null,downtime:null,pipeline:null}; return S.weekly[k]; }
+function dueWord(x){
+  if(x.status==='done') return {t:'أُنجزت '+fmtShort(x.doneAt), c:'green'};
+  const dd = diffDays(x.due, today());
+  if(dd<0) return {t:'متأخرة '+dayword(-dd), c:'red'};
+  if(dd===0) return {t:'اليوم', c:'amber'};
+  if(dd===1) return {t:'بكرا', c:''};
+  if(dd<7) return {t:WD[dow(x.due)], c:''};
+  return {t:fmtShort(x.due), c:''};
+}
+function dueText(d){ const dd=diffDays(d,today()); if(dd<0) return 'كان '+fmtDate(d); if(dd===0) return 'اليوم'; if(dd===1) return 'بكرا'; return fmtDate(d); }
+function attState(id, d){
+  const r = attRec(id, d);
+  if(!r || !r.in){ const late = d<today() || nowMin()>=toMin(startOf(id))+60; return {t:late?'ما وصل':'لسا ما وصل', c:late?'red':'', dot:late?'bg-red':'bg-gray', on:false}; }
+  const c = classify(r.in, id);
+  return {t:(c==='on'?'وصل ':'وصل متأخر ')+r.in+(r.out?' · خرج '+r.out:''), c:TONE[c]==='green'?'':TONE[c], dot:'bg-'+TONE[c], on:true, cls:c};
+}
+
+/* ===================== decisions ===================== */
+const ISSUE_KIND = {problem:'صار معها مشكلة في', not_done:'ما أنجزت', no_reply:'ما ردّت عن', eod:'ما أنجزت'};
+function issueTitle(i){ const m = S.team.find(x=>x.id===i.emp); const who = m ? m.short : (i.name||'موظف'); const k = {problem:'مشكلة في', not_done:'ما أُنجزت:', no_reply:'بدون رد عن'}[i.kind] || 'بخصوص'; return k==='ما أُنجزت:' ? who+': «'+i.task+'» ما أُنجزت' : who+': '+k+' «'+i.task+'»'; }
+function decisions(){
+  const out = [];
+  (S.issues||[]).filter(i=>i.status==='open').sort((a,b)=>a.at<b.at?1:-1).forEach(i=>{
+    const when = i.at ? String(i.at).slice(11,16) : '';
+    out.push({tone:'red', id:i.id, title:issueTitle(i), sub:(i.text?'السبب: '+i.text:'بدون سبب')+(when?' · '+when:''), acts:[['ipen','سجّل عقوبة','عقوبة'],['inone','بدون عقوبة، تمام','تمام']]});
+  });
+  lateTasks().sort((a,b)=>a.due<b.due?-1:1).forEach(x=>{
+    const n = diffDays(today(), x.due);
+    const acts = [['remind','ذكّره على واتساب','ذكّر'],['ext','مدّد الموعد يوم','مدّد']];
+    if(!x.violated) acts.push(['tviol','سجّل مخالفة تأخير','مخالفة']);
+    out.push({tone:'red', id:x.id, title:x.title, sub:emp(x.emp).short+' · متأخرة '+dayword(n)+(x.reminders?' · ذُكّر '+x.reminders+' مرات':''), acts});
+  });
+  S.violations.filter(v=>v.status==='review').forEach(v=>out.push({tone:'amber', id:v.id, title:'مخالفة '+v.type, sub:emp(v.emp).short+' · '+fmtShort(v.date)+' · '+money(v.amount), acts:[['vok','أكّد المخالفة','أكّد'],['vno','ألغِ المخالفة','ألغِ']]}));
+  S.finance.filter(f=>f.pending).forEach(f=>out.push({tone:'amber', id:f.id, title:'مصروف '+f.cat+' '+money(f.amount), sub:'فوق حد الصرف · سجّله '+f.by, acts:[['fok','وافق على المصروف','وافق'],['fno','ارفضه واحذفه','ارفض']]}));
+  const t = today();
+  if(isWorkday(t)){
+    staff().filter(m=>!attRec(m.id,t) && nowMin()>=toMin(startOf(m.id))+60).forEach(m=>out.push({tone:'amber', id:m.id, title:m.short+' ما سجّل دخول اليوم', sub:'دوامه بيبدأ '+startOf(m.id), acts:[['aremind','ذكّره على واتساب','ذكّر'],['absent','سجّل غياب','غياب']]}));
+  }
+  return out;
+}
+
+/* ===================== shell ===================== */
+const TABS = [['home','الرئيسية','home'],['tasks','المهام','tasks'],['team','الفريق','team'],['reports','التقارير','report']];
+const WORD_D = 'M2.5 0.0 13.3 -18.0Q14.3 -16.0 16.3 -15.0Q18.3 -14.0 20.1 -14.0H35.800000000000004L41.800000000000004 0.0ZM41.800000000000004 0.0Q37.2 0.0 33.300000000000004 -2.3000000000000003Q29.400000000000002 -4.6000000000000005 27.050000000000004 -8.5Q24.700000000000003 -12.4 24.700000000000003 -17.0Q24.700000000000003 -21.700000000000003 26.800000000000004 -25.25Q28.900000000000002 -28.8 32.25 -31.0Q35.6 -33.2 39.1 -33.800000000000004Q39.6 -35.5 41.05 -37.3Q42.5 -39.1 43.2 -39.800000000000004Q51.400000000000006 -34.9 55.10000000000001 -29.5Q58.800000000000004 -24.1 58.800000000000004 -17.0Q58.800000000000004 -12.3 56.5 -8.450000000000001Q54.2 -4.6000000000000005 50.35 -2.3000000000000003Q46.5 0.0 41.800000000000004 0.0ZM41.800000000000004 -14.0Q43.1 -14.0 43.900000000000006 -14.850000000000001Q44.7 -15.700000000000001 44.7 -17.0Q44.7 -18.3 43.900000000000006 -19.15Q43.1 -20.0 41.800000000000004 -20.0Q40.5 -20.0 39.6 -19.15Q38.7 -18.3 38.7 -17.0Q38.7 -15.700000000000001 39.6 -14.850000000000001Q40.5 -14.0 41.800000000000004 -14.0Z M67.80000000000001 0.0Q67.80000000000001 0.0 66.80000000000001 -0.05Q65.80000000000001 -0.1 64.80000000000001 -0.6000000000000001Q63.800000000000004 -1.1 63.800000000000004 -2.3000000000000003V-76.9L77.80000000000001 -80.0V-14.0H85.80000000000001V0.0Z M81.80000000000001 0.0V-14.0H101.80000000000001L106.50000000000001 0.0ZM106.20000000000002 0.0Q101.60000000000001 0.0 97.70000000000002 -2.3000000000000003Q93.80000000000001 -4.6000000000000005 91.45000000000002 -8.5Q89.10000000000001 -12.4 89.10000000000001 -17.0Q89.10000000000001 -21.700000000000003 91.45000000000002 -25.550000000000004Q93.80000000000001 -29.400000000000002 97.70000000000002 -31.700000000000003Q101.60000000000001 -34.0 106.30000000000001 -34.0Q110.9 -34.0 114.70000000000002 -31.700000000000003Q118.50000000000001 -29.400000000000002 120.80000000000001 -25.550000000000004Q123.10000000000002 -21.700000000000003 123.10000000000002 -17.0Q123.10000000000002 -12.3 120.80000000000001 -8.450000000000001Q118.50000000000001 -4.6000000000000005 114.70000000000002 -2.3000000000000003Q110.9 0.0 106.20000000000002 0.0ZM106.20000000000002 -14.0Q107.50000000000001 -14.0 108.30000000000001 -14.850000000000001Q109.10000000000001 -15.700000000000001 109.10000000000001 -17.0Q109.10000000000001 -18.3 108.30000000000001 -19.15Q107.50000000000001 -20.0 106.20000000000002 -20.0Q104.9 -20.0 104.0 -19.15Q103.10000000000001 -18.3 103.10000000000001 -17.0Q103.10000000000001 -15.700000000000001 104.0 -14.850000000000001Q104.9 -14.0 106.20000000000002 -14.0Z M138.60000000000002 -44.2Q136.20000000000002 -44.2 134.5 -45.900000000000006Q132.8 -47.6 132.8 -50.0Q132.8 -52.4 134.5 -54.099999999999994Q136.20000000000002 -55.8 138.60000000000002 -55.8Q141.0 -55.8 142.7 -54.099999999999994Q144.4 -52.4 144.4 -50.0Q144.4 -47.6 142.7 -45.900000000000006Q141.0 -44.2 138.60000000000002 -44.2Z M117.10000000000001 15.0Q121.50000000000001 16.2 124.35000000000001 15.9Q127.2 15.600000000000001 128.8 14.200000000000001Q130.4 12.8 131.0 10.65Q131.60000000000002 8.5 131.60000000000002 6.0V-30.900000000000002L145.60000000000002 -34.0V6.0Q145.60000000000002 11.3 143.35000000000002 14.65Q141.10000000000002 18.0 137.5 19.55Q133.9 21.1 129.95000000000002 21.0Q126.00000000000001 20.900000000000002 122.55000000000001 19.35Q119.10000000000001 17.8 117.10000000000001 15.0Z';
+function markSvg(bub, chk, size){ return '<svg class="logo" width="'+size+'" height="'+size+'" viewBox="22 22 158 160" aria-hidden="true"><path d="M64 26 H140 Q176 26 176 62 V112 Q176 148 140 148 H92 L56 178 L62 148 Q26 146 26 112 V62 Q26 26 64 26 Z" fill="'+bub+'"/><path d="M66 90 L92 116 L136 70" fill="none" stroke="'+chk+'" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><circle cx="150" cy="46" r="11" fill="#E8B23A"/></svg>'; }
+function wordSvg(fill, h){ return '<svg viewBox="1.5 -81.0 145.1 103.0" style="height:'+h+'px;width:auto;display:block" role="img" aria-label="زمام"><path d="'+WORD_D+'" fill="'+fill+'"/></svg>'; }
+function pageHead(title, sub, actions){ return '<div class="ph"><div><h1 class="pt">'+title+'</h1>'+(sub?'<p class="ps">'+sub+'</p>':'')+'</div>'+(actions?'<div class="acts">'+actions+'</div>':'')+'</div>'; }
+function sbStatus(){
+  const key = !!S.db.botSecret, st = ui.wa.status;
+  let dot='bg-gray', b='الإرسال غير مفعّل', small='فعّله من الإعدادات', act='goSettings', lbl='فعّل';
+  if(key && st==='WORKING'){ dot='bg-green'; b='واتساب مربوط'; small=ui.wa.me?'+'+ui.wa.me:''; act=''; }
+  else if(key && st==='ERR'){ dot='bg-red'; b='البوت ما بيرد'; small=ui.wa.err||''; act='botTest'; lbl='أعد'; }
+  else if(key && !st){ dot='bg-gray'; b='جارٍ الفحص…'; small=''; act=''; }
+  else if(key){ dot='bg-amber'; b='واتساب مفصول'; small='امسح الكود لربطه'; act='waLink'; lbl='اربط'; }
+  return '<div class="sb-status"><span class="dot '+dot+'"></span><div style="flex:1;min-width:0"><b>'+b+'</b>'+(small?'<span style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext">'+esc(small)+'</span>':'')+'</div>'+(act?'<button data-act="'+act+'">'+lbl+'</button>':'')+'</div>';
+}
+function sidebar(){
+  const late = lateTasks().length, m = me();
+  return '<aside class="sb"><div class="sb-brand">'+markSvg('#FFFFFF','#152E63',34)+wordSvg('#FFFFFF',22)+(DEMO?'<span class="tag-demo">تجريبي</span>':'')+'</div>'+
+    '<nav class="sb-nav">'+TABS.map(([v,l,i])=>'<button class="'+(ui.view===v?'on':'')+'" data-act="nav" data-view="'+v+'">'+ic(i,19)+l+(v==='tasks'&&late?'<em>'+late+'</em>':'')+'</button>').join('')+
+    '<button class="'+(ui.view==='settings'?'on':'')+'" data-act="nav" data-view="settings">'+ic('gear',19)+'الإعدادات</button></nav>'+
+    '<div class="sb-foot">'+sbStatus()+'<div class="sb-user">'+av(m,34)+'<div><b>'+esc(m.name)+'</b><small>'+esc(m.role)+'</small></div><button class="icbtn" data-act="viewAsMenu" title="جرّب واجهة الموظف" aria-label="واجهة الموظف">'+ic('user',18)+'</button></div></div></aside>';
+}
+function mobileTop(){
+  return '<header class="mtop">'+markSvg('#152E63','#FFFFFF',28)+wordSvg('#152E63',19)+(DEMO?'<span class="tag-demo">تجريبي</span>':'')+'<span class="sp"></span>'+
+    '<button class="icbtn" data-act="viewAsMenu" aria-label="واجهة الموظف">'+ic('user')+'</button><button class="icbtn'+(ui.view==='settings'?' on':'')+'" data-act="nav" data-view="settings" aria-label="الإعدادات">'+ic('gear')+'</button></header>';
+}
+function bnav(){
+  const late = lateTasks().length;
+  const b = ([v,l,i]) => '<button class="'+(ui.view===v?'on':'')+'" data-act="nav" data-view="'+v+'">'+ic(i,22)+'<span>'+l+'</span>'+(v==='tasks'&&late?'<em>'+late+'</em>':'')+'</button>';
+  return '<nav class="bnav">'+b(TABS[0])+b(TABS[1])+'<button data-act="plus" aria-label="إضافة"><span class="plus">'+ic('plus',26)+'</span></button>'+b(TABS[2])+b(TABS[3])+'</nav>';
+}
+function render(){
+  const app = $('#app');
+  if(ui.role!=='manager'){ app.innerHTML = vEmployee(ui.role); fixDigits(app); return; }
+  const views = {home:vHome, tasks:vTasks, team:vTeam, reports:vReports, settings:vSettings};
+  const narrow = ui.view==='settings' || ui.view==='reports';
+  app.innerHTML = '<div class="shell">'+sidebar()+'<div class="mainCol">'+mobileTop()+'<main class="wrap'+(narrow?' narrow':'')+'">'+(views[ui.view]||vHome)()+'</main></div></div>'+bnav();
+  fixDigits(app);
+}
+
+/* ===================== HOME ===================== */
+function setupCard(){
+  const key = !!S.db.botSecret, wa = ui.wa.status, waOk = wa==='WORKING', grpOk = !!(ui.grp && ui.grp.group);
+  if(key && waOk && (grpOk || DEMO)) return '';
+  const step = (n, ok, text, doneText, act, label) => '<li class="'+(ok?'ok':'')+'"><span class="n">'+(ok?ic('check',13):n)+'</span><span>'+(ok?doneText:text)+'</span>'+(ok||!act?'':'<button class="btn btn-pri btn-sm" data-act="'+act+'">'+label+'</button>')+'</li>';
+  const waText = !key ? 'اربط واتساب الشركة' : wa==='ERR' ? 'واتساب: '+(ui.wa.err||'فشل الفحص') : !wa ? 'جارٍ فحص واتساب…' : 'واتساب الشركة مفصول';
+  return '<section class="setup"><h3>'+ic('spark',16)+'تشغيل زمام: ثلاث خطوات، مرة وحدة بس</h3><ol>'+
+    step(1, key, 'فعّل الإرسال المباشر على واتساب', 'الإرسال المباشر مفعّل', 'goSettings', 'فعّل')+
+    step(2, waOk, waText, 'واتساب الشركة مربوط', key && wa && wa!=='ERR' ? 'waLink' : '', 'اربط')+
+    (DEMO ? '' : step(3, grpOk, 'اربط قروب الحضور', 'قروب الحضور مربوط', key && waOk ? 'goGroup' : '', 'كيف؟'))+
+  '</ol></section>';
+}
+function statBtn(attrs, icon, tone, val, label){ return '<button class="stat" '+attrs+'><span class="si si-'+tone+'">'+ic(icon,20)+'</span><span class="sv"><span>'+label+'</span><b'+(tone==='red'?' class="red"':'')+'>'+val+'</b></span></button>'; }
+function vHome(){
+  const t = today(), st = staff();
+  const present = st.filter(m=>{const r=attRec(m.id,t); return r&&r.in;}).length;
+  const late = lateTasks().length, open = S.tasks.filter(x=>x.status!=='done').length;
+  const h = new Date().getHours();
+  const decs = decisions();
+  const shown = ui.allDec ? decs : decs.slice(0,5);
+  const ex = (st[0]||{short:'أحمد'}).short;
+  return pageHead((h<12?'صباح الخير':'مساء الخير')+'، '+esc(me().short), fmtDate(t), '<button class="btn btn-pri hide-m" data-act="plus">'+ic('plus',17)+'جديد</button>')+
+    setupCard()+
+    '<form class="ask" id="cmdForm" autocomplete="off">'+ic('spark',20)+'<input id="cmdInput" placeholder="اكتب أمر… مثلاً: مهمة لـ'+esc(ex)+' متابعة العملاء الخميس" aria-label="اكتب أمر"><button class="ask-go" type="submit" aria-label="نفّذ">نفّذ'+ic('arrow',16)+'</button></form>'+
+    '<div class="ask-hint"><span>جرّب:</span>'+['إيراد 350 اشتراك شهري','مين متأخر؟','تقرير الأسبوع'].map(q=>'<button type="button" data-act="cmdEx" data-q="'+esc(q)+'">'+esc(q)+'</button>').join('')+'</div>'+
+    '<div class="stats">'+
+      statBtn('data-act="nav" data-view="team"', 'clock', 'green', present+'<i>/'+st.length+'</i>', 'حاضرين اليوم')+
+      statBtn('data-act="go" data-view="tasks" data-filter="open"', 'list', 'pri', open, 'مهام مفتوحة')+
+      statBtn('data-act="go" data-view="tasks" data-filter="late"', 'alert', late?'red':'gray', late, 'مهام متأخرة')+
+      statBtn('data-act="go" data-view="reports" data-rtype="money"', 'wallet', 'gold', fmtN(sumFin('in',t,t))+'<i> ₪</i>', 'إيراد اليوم')+
+    '</div>'+
+    '<div class="home2">'+
+      '<section class="card"><div class="card-h"><h2>يحتاج قرارك</h2>'+(decs.length?'<span class="count">'+decs.length+'</span>':'')+'</div>'+
+        (decs.length ? shown.map(decRow).join('')+(decs.length>5?'<div class="card-f"><button class="lnk" data-act="toggleAllDec">'+(ui.allDec?'أقل':'عرض الكل ('+decs.length+')')+'</button></div>':'') : '<div class="empty"><span class="ei">'+ic('checkc',22)+'</span>كل شي تمام، ما في شي يحتاج قرارك.</div>')+
+      '</section>'+
+      '<section class="card"><div class="card-h"><h2>الفريق اليوم</h2><button class="lnk" data-act="nav" data-view="team">كل الفريق</button></div>'+
+        (st.length ? st.map(m=>{ const s=attState(m.id,t); const w=(S.wtasks||[]).filter(x=>x.emp===m.id && x.date===t); const wd=w.filter(x=>x.status==='done').length; return '<div class="row" data-act="teamDetail" data-id="'+m.id+'">'+av(m,36)+'<div class="row-b"><b>'+esc(m.short)+'</b><small>'+(w.length?wd+'/'+w.length+' مهام اليوم'+(w.some(x=>x.status==='active')?' · شغّال على: '+esc(w.find(x=>x.status==='active').title):''):esc(m.role))+'</small></div><span class="end '+s.c+'"><span class="dot '+s.dot+'"></span>'+esc(s.t.split(' · ')[0])+'</span></div>'; }).join('') : '<div class="empty"><span class="ei gray">'+ic('team',22)+'</span>ما في موظفين بعد.<br><button class="btn btn-soft btn-sm" data-act="addMemberModal">أضف أول موظف</button></div>')+
+      '</section>'+
+    '</div>';
+}
+function decRow(d){
+  const [k,,short] = d.acts[0];
+  return '<div class="row" data-act="decMenu" data-id="'+esc(d.id)+'"><span class="dot bg-'+d.tone+'"></span><div class="row-b"><b>'+esc(d.title)+'</b><small>'+esc(d.sub)+'</small></div><button class="btn btn-soft btn-sm" data-act="dec" data-k="'+k+'" data-id="'+esc(d.id)+'">'+short+'</button></div>';
+}
+
+/* ===================== TASKS ===================== */
+function vTasks(){
+  const t = today();
+  let list = S.tasks.slice();
+  if(ui.taskEmp) list = list.filter(x=>x.emp===ui.taskEmp);
+  const cnt = {open:list.filter(x=>x.status!=='done').length, late:list.filter(x=>tStatus(x)==='late').length, done:list.filter(x=>x.status==='done').length};
+  const f = ui.taskFilter;
+  if(f==='open') list = list.filter(x=>x.status!=='done');
+  else if(f==='late') list = list.filter(x=>tStatus(x)==='late');
+  else if(f==='done') list = list.filter(x=>x.status==='done');
+  const rank = x => { const s=tStatus(x); return s==='late'?0 : s==='done'?3 : x.due===t?1 : 2; };
+  list.sort((a,b)=> rank(a)-rank(b) || (rank(a)===3 ? (a.doneAt<b.doneAt?1:-1) : (a.due<b.due?-1:a.due>b.due?1:0)));
+  let body = '';
+  if(!list.length) body = '<div class="list empty"><span class="ei gray">'+ic('tasks',22)+'</span>'+(S.tasks.length?'ما في مهام هنا.':'ما في مهام بعد. أضف أول مهمة لموظف، وبتوصله على واتساب مع السبب والموعد.')+'<br><button class="btn btn-pri btn-sm" data-act="openTask">'+ic('plus',15)+'مهمة جديدة</button></div>';
+  else [[0,'متأخرة'],[1,'اليوم'],[2,'قادمة'],[3,'منجزة']].forEach(([r,label])=>{ const g=list.filter(x=>rank(x)===r); if(!g.length) return; body += '<div class="gh">'+label+' · '+g.length+'</div><div class="list">'+g.map(taskRow).join('')+'</div>'; });
+  const wt = (S.wtasks||[]).filter(x=>x.date===t && (!ui.taskEmp || x.emp===ui.taskEmp)).sort((a,b)=>a.emp===b.emp ? a.n-b.n : (a.emp<b.emp?-1:1));
+  const wtBlock = wt.length ? '<div class="gh">مهام الفريق اليوم من واتساب · '+wt.filter(x=>x.status==='done').length+'/'+wt.length+' أُنجزت</div><div class="list">'+wt.map(wtaskRow).join('')+'</div>' : '';
+  if(f==='open' || f==='done') body = wtBlock + body;
+  return pageHead('المهام', cnt.open+' مفتوحة'+(cnt.late?' · <span class="red">'+cnt.late+' متأخرة</span>':''), '<button class="btn btn-pri" data-act="openTask">'+ic('plus',17)+'مهمة</button>')+
+    '<div class="toolbar"><div class="seg">'+[['open','المفتوحة'],['late','المتأخرة'],['done','المنجزة']].map(([k,l])=>'<button class="'+(f===k?'on':'')+'" data-act="tfilter" data-k="'+k+'">'+l+'<i>'+cnt[k]+'</i></button>').join('')+'</div>'+
+    '<select class="sel" id="tEmpSel" aria-label="الموظف"><option value="">كل الفريق</option>'+activeTeam().map(m=>'<option value="'+m.id+'"'+(ui.taskEmp===m.id?' selected':'')+'>'+esc(m.short)+'</option>').join('')+'</select></div>'+body;
+}
+function taskRow(x){
+  const s = tStatus(x), e = emp(x.emp), dw = dueWord(x), p = pri(x.pri);
+  return '<div class="row'+(s==='done'?' done':'')+'" data-act="taskDetail" data-id="'+x.id+'"><button class="cb" data-act="toggleDone" data-id="'+x.id+'" aria-label="تم">'+ic('check',14)+'</button>'+
+    '<div class="row-b"><b>'+esc(x.title)+'</b><small><span class="'+dw.c+'">'+dw.t+'</span>'+(p?' · '+esc(p.title):'')+'</small></div>'+
+    '<span class="who">'+av(e,22)+esc(e.short)+'</span></div>';
+}
+
+/* ===================== TEAM ===================== */
+function teamCard(m){
+  const t = today();
+  const open = S.tasks.filter(x=>x.emp===m.id && x.status!=='done').length;
+  const late = S.tasks.filter(x=>x.emp===m.id && tStatus(x)==='late').length;
+  const s = m.manager||!m.active ? null : attState(m.id,t);
+  const pill = m.manager ? '<span class="pill">المدير العام</span>' : !m.active ? '<span class="pill">متوقف مؤقتاً</span>' : '<span class="pill '+(s.on?(s.cls==='on'?'green':s.cls==='slight'?'amber':'red'):(s.c==='red'?'red':''))+'"><span class="dot '+s.dot+'"></span>'+esc(s.t.split(' · ')[0])+'</span>';
+  return '<div class="tcard" data-act="teamDetail" data-id="'+m.id+'"><div class="th">'+av(m,46)+'<div><b>'+esc(m.name)+'</b><small>'+esc(m.role)+'</small></div></div>'+
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+pill+(m.active&&!m.manager?'<span class="tm"><span><b>'+open+'</b> مفتوحة</span>'+(late?'<span class="red"><b class="red">'+late+'</b> متأخرة</span>':'')+'</span>':'')+'</div>'+
+    (m.manager?'<div class="ta"><button class="btn btn-ghost btn-sm" data-act="editMember" data-id="'+m.id+'">تعديل بياناتي</button></div>':'<div class="ta"><button class="btn btn-ghost btn-sm" data-act="openTask" data-emp="'+m.id+'">'+ic('plus',15)+'مهمة</button><button class="btn btn-ghost btn-sm" data-act="msg" data-id="'+m.id+'">'+ic('mail',15)+'رسالة</button></div>')+'</div>';
+}
+function vTeam(){
+  const t = today(), st = staff();
+  const present = st.filter(m=>{const r=attRec(m.id,t); return r&&r.in;}).length;
+  const paused = listTeam().filter(m=>!m.active);
+  return pageHead('الفريق', present+' من '+st.length+' وصلوا اليوم'+(db.on()?' · <span class="green">مربوط بقاعدة البيانات</span>':''),
+      '<button class="btn btn-ghost" data-act="msgAll">'+ic('mail',16)+'رسالة للفريق</button><button class="btn btn-pri" data-act="addMemberModal">'+ic('plus',16)+'موظف جديد</button>')+
+    '<div class="tgrid">'+activeTeam().map(teamCard).join('')+'</div>'+
+    (paused.length?'<div class="gh">متوقفون</div><div class="tgrid">'+paused.map(teamCard).join('')+'</div>':'');
+}
+
+/* ===================== REPORTS ===================== */
+function attStats(ids, a, b){
+  const t = today(), end = b<t?b:t; let on=0,slight=0,late=0,absent=0,hours=0,hc=0; const lateBy={};
+  for(let d=a; d<=end; d=addDays(d,1)){ if(!isWorkday(d)) continue;
+    ids.forEach(id=>{ const r=attRec(id,d);
+      if(!r||!r.in){ if(d<t || nowMin()>=600) absent++; return; }
+      const c=classify(r.in, id); if(c==='on') on++; else { if(c==='slight') slight++; else late++; lateBy[id]=(lateBy[id]||0)+1; }
+      if(r.out){ hours+=(toMin(r.out)-toMin(r.in))/60; hc++; } }); }
+  return {on,slight,late,absent,avg:hc?hours/hc:0,lateBy};
+}
+function priorityProgress(p){ const ts=S.tasks.filter(x=>x.pri===p.id); return {total:ts.length, done:ts.filter(x=>x.status==='done').length, late:ts.filter(x=>tStatus(x)==='late').length}; }
+function buildReport(type, anchor, empId){
+  const t = today();
+  const a = type==='daily'?anchor:weekStart(anchor), b = type==='daily'?anchor:addDays(a,6);
+  const people = empId?[emp(empId)]:staff();
+  const ids = people.map(m=>m.id);
+  const inR = d => d && d>=a && d<=b;
+  const blocks = [];
+  const title = (type==='daily'?'تقرير '+fmtDate(a):'تقرير أسبوع '+fmtShort(a)+' إلى '+fmtShort(b))+(empId?' · '+emp(empId).short:'');
+  if(type==='weekly' && !empId){
+    const w = S.weekly[a]||{}, T = S.targets, rev = sumFin('in',a,b);
+    const st = ok => ok?'في الهدف':'تحت الهدف';
+    blocks.push({h:'أرقام الأسبوع', table:{head:['المؤشر','الفعلي','الهدف',''], rows:[
+      ['الإيراد', money(rev), money(T.revenue), st(rev>=T.revenue)],
+      ['الاحتفاظ', w.retention==null?'—':pct(w.retention), pct(T.retention), w.retention==null?'':st(w.retention>=T.retention)],
+      ['عملاء جدد', w.newClients==null?'—':w.newClients, T.newClients, w.newClients==null?'':st(w.newClients>=T.newClients)],
+      ['ساعات الأعطال', w.downtime==null?'—':w.downtime, 'أقل من '+T.downtime, w.downtime==null?'':st(w.downtime<=T.downtime)],
+      ['محادثات شراكة', w.pipeline==null?'—':w.pipeline, T.pipeline, w.pipeline==null?'':st(w.pipeline>=T.pipeline)]
+    ]}, lines:[]});
+  }
+  if(type==='daily'){
+    const tracked = people.filter(m=>!m.manager);
+    if(tracked.length){
+      const pres = tracked.filter(m=>{const r=attRec(m.id,a);return r&&r.in;});
+      const lines = [pres.length+' من '+tracked.length+' حضروا'];
+      const lateL = pres.filter(m=>classify(attRec(m.id,a).in, m.id)!=='on').map(m=>m.short+' '+attRec(m.id,a).in);
+      if(lateL.length) lines.push('وصلوا متأخر: '+lateL.join('، '));
+      const miss = tracked.filter(m=>{const r=attRec(m.id,a);return !r||!r.in;}).map(m=>m.short);
+      if(miss.length) lines.push('ما وصلوا: '+miss.join('، '));
+      blocks.push({h:'الحضور', lines});
+    }
+    const wt = (S.wtasks||[]).filter(x=>x.date===a && ids.includes(x.emp));
+    if(wt.length){
+      const byEmp = {}; wt.forEach(x=>{ (byEmp[x.emp]=byEmp[x.emp]||[]).push(x); });
+      blocks.push({h:'مهام الفريق من واتساب', lines: Object.keys(byEmp).map(id=>{ const l=byEmp[id]; const d=l.filter(x=>x.status==='done').length; const nd=l.filter(x=>x.status==='skipped'||x.status==='problem'); return emp(id).short+': '+d+' من '+l.length+' أُنجزت'+(nd.length?'؛ ما أُنجزت: '+nd.map(x=>x.title+(x.problem?' ('+x.problem+')':'')).join('، '):''); })});
+    }
+  } else if(ids.some(id=>!emp(id).manager)) {
+    const s = attStats(ids.filter(id=>!emp(id).manager), a, b);
+    const worst = Object.entries(s.lateBy).sort((x,y)=>y[1]-x[1])[0];
+    blocks.push({h:'الحضور', lines:['في الوقت '+s.on+' مرة، تأخير '+(s.slight+s.late)+'، غياب '+s.absent, 'متوسط الدوام '+s.avg.toFixed(1)+' ساعة'].concat(worst&&!empId?['الأكثر تأخيراً: '+emp(worst[0]).short+' ('+worst[1]+' مرات)']:[])});
+  }
+  const taskIds = empId?[empId]:activeTeam().map(m=>m.id);
+  const myT = S.tasks.filter(x=>taskIds.includes(x.emp));
+  const doneR = myT.filter(x=>x.status==='done'&&inR(x.doneAt));
+  const lateNow = myT.filter(x=>tStatus(x)==='late');
+  const tag = x => empId?'':' ('+emp(x.emp).short+')';
+  if(type==='daily'){
+    const lines = ['أُنجزت '+doneR.length+(doneR.length?': '+doneR.map(x=>x.title+tag(x)).join('، '):'')];
+    const dueD = myT.filter(x=>x.status!=='done'&&x.due===a);
+    if(dueD.length) lines.push('موعدها اليوم: '+dueD.map(x=>x.title+tag(x)).join('، '));
+    if(a===t && lateNow.length) lines.push('متأخرة: '+lateNow.map(x=>x.title+tag(x)+' '+dayword(diffDays(t,x.due))).join('، '));
+    blocks.push({h:'المهام', lines});
+  } else {
+    const rows = (empId?[emp(empId)]:activeTeam()).map(m=>{ const ts=S.tasks.filter(x=>x.emp===m.id && (inR(x.due)||inR(x.doneAt))); const d=ts.filter(x=>x.status==='done'&&inR(x.doneAt)).length; const l=S.tasks.filter(x=>x.emp===m.id&&tStatus(x)==='late').length; return [m.short, ts.length, d, l]; });
+    const tot = rows.reduce((s,r)=>s+r[1],0), dn = rows.reduce((s,r)=>s+r[2],0);
+    blocks.push({h:'المهام · الإنجاز '+(tot?pct(dn/tot):'—'), table:{head:['','هذا الأسبوع','منجزة','متأخرة'], rows}, lines:[]});
+  }
+  if(!empId){
+    const inc = sumFin('in',a,b), out = sumFin('out',a,b);
+    const m={}; S.finance.filter(f=>f.kind==='in'&&inR(f.date)).forEach(f=>m[f.cat]=(m[f.cat]||0)+Number(f.amount));
+    const cats = Object.entries(m).sort((x,y)=>y[1]-x[1]);
+    const lines = ['إيراد '+money(inc)+' · مصروف '+money(out)+' · صافي '+money(inc-out)];
+    if(cats.length) lines.push('من: '+cats.map(([c,v])=>c+' '+money(v)).join('، '));
+    blocks.push({h:'المال', lines});
+  }
+  const vs = S.violations.filter(v=>ids.includes(v.emp)&&inR(v.date)&&v.status!=='cancelled');
+  if(vs.length) blocks.push({h:'المخالفات', lines: vs.map(v=>emp(v.emp).short+': '+v.type+' · '+money(v.amount)+(v.status==='confirmed'?'':' (بانتظار تأكيدك)'))});
+  if(type==='weekly' && !empId){
+    blocks.push({h:'الأولويات', lines:S.priorities.map((p,i)=>{ const g=priorityProgress(p); return (i+1)+'. '+p.title+' ('+emp(p.owner).short+'): '+g.done+' من '+g.total+' · '+(g.total===0?'ما في مهام':g.late?'يحتاج متابعة':g.done===g.total?'مكتملة':'على المسار'); })});
+  }
+  if(!empId && b>=t && a<=t){
+    const ds = decisions();
+    if(ds.length) blocks.push({h:'يحتاج قرارك', lines: ds.map(d=>d.title+' · '+d.sub)});
+  }
+  return {title, sub:S.settings.company, blocks, stamp:fmtDate(t)+' '+nowHM()};
+}
+function reportHTML(r){
+  return '<article class="doc"><div class="doc-h"><h2>'+esc(r.title)+'</h2><small>'+esc(r.sub)+'</small></div>'+
+    r.blocks.map(b=>'<section><h4>'+esc(b.h)+'</h4>'+(b.table?'<table class="rt"><thead><tr>'+b.table.head.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+b.table.rows.map(row=>'<tr>'+row.map((c,i)=>'<td'+(c==='تحت الهدف'?' class="red"':c==='في الهدف'?' class="green"':'')+(i===0?' style="font-weight:600"':'')+'>'+esc(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table>':'')+b.lines.map(l=>'<p>'+esc(l)+'</p>').join('')+'</section>').join('')+
+    '<footer>زمام · '+esc(r.stamp)+'</footer></article>';
+}
+function reportText(r){
+  let s = r.title+'\n'+r.sub+'\n';
+  r.blocks.forEach(b=>{ s += '\n*'+b.h+'*\n'; if(b.table) b.table.rows.forEach(row=>{ s += '- '+row[0]+': '+row.slice(1).map((c,i)=>(b.table.head[i+1]?b.table.head[i+1]+' ':'')+c).filter(Boolean).join(' | ')+'\n'; }); b.lines.forEach(l=>{ s += '- '+l+'\n'; }); });
+  return s + '\nزمام · '+r.stamp;
+}
+function vReports(){
+  const seg = '<div class="seg">'+[['daily','اليوم'],['weekly','الأسبوع'],['money','المال']].map(([k,l])=>'<button class="'+(ui.rtype===k?'on':'')+'" data-act="rtype" data-k="'+k+'">'+l+'</button>').join('')+'</div>';
+  const head = pageHead('التقارير', 'جاهزة بضغطة. أرسلها على واتساب أو نزّلها PDF.');
+  if(ui.rtype==='money') return head+'<div class="toolbar">'+seg+'<select class="sel" id="fperSel" aria-label="الفترة">'+[['week','هذا الأسبوع'],['month','هذا الشهر'],['30','آخر 30 يوم']].map(([k,l])=>'<option value="'+k+'"'+(ui.fper===k?' selected':'')+'>'+l+'</option>').join('')+'</select></div>'+vMoney();
+  const r = buildReport(ui.rtype, ui.rdate, ui.remp||null);
+  const label = ui.rtype==='daily'?(ui.rdate===today()?'اليوم':fmtDate(ui.rdate)):(weekStart(ui.rdate)===weekStart(today())?'هذا الأسبوع':'أسبوع '+fmtShort(weekStart(ui.rdate)));
+  const canNext = ui.rtype==='daily'? ui.rdate<today() : weekStart(ui.rdate)<weekStart(today());
+  return head+'<div class="toolbar">'+seg+'<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+    '<div class="dnav"><button class="icbtn" data-act="rdate" data-k="-1" aria-label="السابق">'+ic('prev',17)+'</button><span>'+label+'</span><button class="icbtn" data-act="rdate" data-k="1" '+(canNext?'':'disabled style="opacity:.25"')+' aria-label="التالي">'+ic('next',17)+'</button></div>'+
+    '<select class="sel" id="rEmpSel" aria-label="لمين التقرير"><option value="">الفريق كله</option>'+activeTeam().map(m=>'<option value="'+m.id+'"'+(ui.remp===m.id?' selected':'')+'>'+esc(m.short)+'</option>').join('')+'</select></div></div>'+
+    reportHTML(r)+
+    '<div class="acts"><button class="btn btn-green" data-act="reportSend">'+ic('send',17)+'أرسل على واتساب</button><button class="btn btn-ghost" data-act="copyReport">نسخ</button><button class="btn btn-ghost" data-act="printReport">PDF</button>'+
+    (ui.rtype==='weekly'&&!ui.remp&&weekStart(ui.rdate)===weekStart(today())?'<button class="btn btn-ghost" data-act="editKpis">حدّث أرقام الأسبوع</button>':'')+'</div>';
+}
+function finRange(){ const t=today(); if(ui.fper==='week'){ const a=weekStart(t); return [a, addDays(a,6)]; } if(ui.fper==='30') return [addDays(t,-29), t]; return [t.slice(0,8)+'01', t]; }
+function vMoney(){
+  const [a,b] = finRange();
+  const inc = sumFin('in',a,b), out = sumFin('out',a,b), incNF = sumFin('in',a,b,{noFund:true});
+  const byCat = kind => { const m={}; S.finance.filter(f=>f.kind===kind&&f.date>=a&&f.date<=b).forEach(f=>m[f.cat]=(m[f.cat]||0)+Number(f.amount)); return Object.entries(m).sort((x,y)=>y[1]-x[1]); };
+  const tx = S.finance.filter(f=>f.date>=a&&f.date<=b).sort((x,y)=>x.date<y.date?1:x.date>y.date?-1:0);
+  const net = inc-out, netNF = incNF-out;
+  return '<div class="money3">'+
+    '<div class="stat"><span class="si si-green">'+ic('up',20)+'</span><span class="sv"><span>إيراد</span><b class="green">'+fmtN(inc)+'<i> ₪</i></b></span></div>'+
+    '<div class="stat"><span class="si si-gray">'+ic('down',20)+'</span><span class="sv"><span>مصروف</span><b>'+fmtN(out)+'<i> ₪</i></b></span></div>'+
+    '<div class="stat"><span class="si si-gold">'+ic('wallet',20)+'</span><span class="sv"><span>صافي</span><b class="'+(net<0?'red':'')+'">'+fmtN(net)+'<i> ₪</i></b></span></div></div>'+
+    '<p class="ps" style="margin:10px 4px 0;font-size:13.5px">بدون المنح، الصافي <b class="'+(netNF<0?'red':'')+'">'+money(netNF)+'</b>. هذا رقم الاستقلال المالي.</p>'+
+    '<section class="blk"><div class="blk-h"><h2>الإيراد من وين؟</h2></div><div class="list">'+(byCat('in').map(([c,v])=>'<div class="row" style="cursor:default"><div class="row-b"><b>'+esc(c)+'</b></div><span class="end"><b style="color:var(--ink)">'+money(v)+'</b> · '+(inc?Math.round(v/inc*100):0)+'%</span></div>').join('')||'<div class="empty">ما في إيراد</div>')+'</div></section>'+
+    '<section class="blk"><div class="blk-h"><h2>العمليات</h2><button class="lnk" data-act="openFin" data-k="in">+ إضافة</button></div><div class="list">'+
+      (tx.length? tx.slice(0,40).map(f=>{ const isIn=f.kind==='in'; return '<div class="row" data-act="finMenu" data-id="'+f.id+'"><span class="si '+(isIn?'si-green':'si-gray')+'" style="width:34px;height:34px;border-radius:10px">'+ic(isIn?'up':'down',16)+'</span><div class="row-b"><b>'+esc(f.cat)+(f.note?' · <span class="mut" style="font-weight:400">'+esc(f.note)+'</span>':'')+'</b><small>'+fmtShort(f.date)+' · '+esc(f.by||'')+(f.pending?' · <span class="amber">بانتظار موافقة</span>':'')+'</small></div><span class="end"><b class="'+(isIn?'green':'')+'" style="font-size:15px">'+(isIn?'+':'−')+fmtN(f.amount)+'</b></span></div>'; }).join('') : '<div class="empty">ما في عمليات</div>')+
+    '</div></section>';
+}
+
+/* ===================== SETTINGS ===================== */
+function vSettings(){
+  const T = S.targets, st = S.settings;
+  const sec = (title, inner, foot) => '<section class="card blk"><div class="card-h"><h2>'+title+'</h2></div>'+inner+(foot?'<div class="card-f">'+foot+'</div>':'')+'</section>';
+  const saveBtn = (act) => '<p style="margin-top:10px"><button class="btn btn-soft btn-sm" data-act="'+act+'">احفظ</button></p>';
+  return pageHead('الإعدادات', 'هذا عقل المدير الذكي. كل قرار بيرجع لهون.')+
+    sec('الأولويات الثلاث', S.priorities.map((p,i)=>{ const g=priorityProgress(p); return '<div class="row" data-act="editPri" data-id="'+p.id+'">'+av(emp(p.owner),34)+'<div class="row-b"><b>'+(i+1)+'. '+esc(p.title)+'</b><small>'+esc(p.goal)+'</small></div><span class="end">'+g.done+'/'+g.total+' '+ic('chev',16)+'</span></div>'; }).join(''))+
+    sec('أهداف الأسبوع', [['revenue','الإيراد (₪)',T.revenue],['retention','الاحتفاظ (%)',Math.round(T.retention*100)],['newClients','عملاء جدد',T.newClients],['downtime','حد الأعطال (ساعات)',T.downtime],['pipeline','محادثات شراكة',T.pipeline]].map(([k,l,v])=>'<div class="frow"><label for="tg_'+k+'">'+l+'</label><input class="inp" type="text" inputmode="decimal" id="tg_'+k+'" value="'+v+'"></div>').join(''), saveBtn('saveTargets'))+
+    sec('الدوام والصرف', '<div class="frow"><label for="st_start">بداية الدوام</label><input class="inp" type="time" id="st_start" value="'+st.start+'"></div><div class="frow"><label for="st_grace">دقائق السماح</label><input class="inp" type="text" inputmode="decimal" id="st_grace" value="'+st.grace+'"></div><div class="frow"><label for="st_lim">حد الصرف بدون موافقة (₪)</label><input class="inp" type="text" inputmode="decimal" id="st_lim" value="'+st.expenseLimit+'"></div>', saveBtn('saveRules'))+
+    sec('العقوبات (₪)', '<div class="frow" style="padding-top:8px;padding-bottom:4px"><small class="mut">المبلغ اللي بينخصم لكل نوع. 0 يعني تنبيه بدون خصم.</small></div>'+S.rules.map((r,i)=>'<div class="frow"><label for="rl_'+i+'">'+esc(r.type)+'</label><input class="inp" type="text" inputmode="decimal" id="rl_'+i+'" value="'+r.amount+'"></div>').join(''), saveBtn('saveFines'))+
+    sec('التذكيرات التلقائية', [['rm_tasks','مهام الصبح','يبعت لكل موظف مهامه لما يبدأ دوامه',st.remindTasks!==false],['rm_checkin','تذكير الدخول','لو ما سجّل دخول بعد فترة السماح',st.remindCheckin!==false],['rm_summary','ملخص المساء لك','حضور، مهام الفريق، وشو بانتظار قرارك',st.remindSummary!==false]].map(([id,l,sub,on])=>'<div class="frow"><label for="'+id+'">'+l+'<br><small class="mut" style="font-weight:400">'+sub+'</small></label><input type="checkbox" id="'+id+'" '+(on?'checked':'')+' style="width:18px;height:18px;accent-color:var(--green)"></div>').join('')+
+      '<div class="frow"><label for="rm_at">وقت الملخص</label><input class="inp" type="time" id="rm_at" value="'+esc(st.summaryAt||'18:00')+'"></div>'+
+      '<div class="frow"><label for="rm_eod">نهاية اليوم<br><small class="mut" style="font-weight:400">المهام اللي ما خلصت بتنرفع لك</small></label><input class="inp" type="time" id="rm_eod" value="'+esc(st.eod||'19:30')+'"></div>'+
+      '<div class="frow"><label>متابعة المهام مع الموظف</label><div class="seg"><button class="'+((st.followups||'group')==='group'?'on':'')+'" data-act="pick" data-g="fu" data-v="group">في القروب</button><button class="'+(st.followups==='dm'?'on':'')+'" data-act="pick" data-g="fu" data-v="dm">على الخاص</button></div></div>', saveBtn('saveRemind'))+
+    sec('الفريق', listTeam().map(m=>'<div class="frow">'+av(m,32)+'<label data-act="editMember" data-id="'+m.id+'" style="cursor:pointer">'+esc(m.name)+'<br><small class="mut" style="font-weight:400">'+esc(m.role)+' · '+(realPhone(m.phone)?'<span dir="ltr">+'+esc(m.phone)+'</span>':'<span class="tag-demo">'+(m.phone?'رقم تجريبي':'بدون رقم')+'</span>')+'</small></label>'+(m.manager?'<small class="mut">المدير</small>':'<button class="switch '+(m.active?'on':'')+'" data-act="toggleMember" data-id="'+m.id+'" aria-label="تفعيل '+esc(m.short)+'"></button><button class="icbtn" data-act="delMember" data-id="'+m.id+'" aria-label="حذف '+esc(m.short)+'" title="حذف">'+ic('trash',18)+'</button>')+'</div>').join('')+
+      '<div class="row" data-act="addMemberModal"><span class="oi oi-pri" style="width:32px;height:32px;border-radius:50%;display:grid;place-items:center">'+ic('plus',16)+'</span><div class="row-b"><b>إضافة موظف</b><small>'+(db.on()?'بينضاف مباشرة لقاعدة البيانات':'')+'</small></div></div>', '<p class="ps" style="font-size:13px;margin-top:8px">اضغط على أي اسم لتعديل رقمه أو دوره.</p>')+
+    '<div id="botSec">'+sec('واتساب الشركة',
+      '<div class="frow"><label>الحالة</label>'+(()=>{ const w = waLabel(); return '<span class="'+w.c+'" style="font-size:14px">'+esc(w.t)+'</span>'; })()+'</div>'+
+      '<div class="frow"><label for="bot_secret">المفتاح</label><input class="inp" type="password" id="bot_secret" value="'+esc(S.db.botSecret)+'" placeholder="الصق المفتاح هون" style="max-width:220px;text-align:start;direction:ltr"></div>'+
+      '<div class="frow"><label for="bot_url">رابط البوت</label><input class="inp" id="bot_url" value="'+esc(S.db.botUrl)+'" placeholder="https://…" style="max-width:220px;text-align:start;direction:ltr"></div>',
+      '<p style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-soft btn-sm" data-act="botSave">احفظ وافحص</button>'+(db.bot()&&ui.wa.status&&ui.wa.status!=='WORKING'&&ui.wa.status!=='ERR'?'<button class="btn btn-pri btn-sm" data-act="waLink">اربط واتساب</button>':'')+(db.bot()&&(ui.wa.status==='WORKING'||ui.wa.status==='ERR')?'<button class="btn btn-ghost btn-sm" data-act="botTest">افحص</button>':'')+'</p>'+
+      '<p class="ps" style="font-size:13px;margin-top:8px">المهام والتذكيرات والتقارير والرسائل بتطلع من هون مباشرة على رقم واتساب الشركة. ما في شي بينفتح.</p>')+'</div>'+
+    (db.bot() ? '<div id="grpSec">'+sec('قروب الحضور', grpRows(), '<p style="margin-top:10px"><button class="btn btn-soft btn-sm" data-act="attSync">حدّث الآن</button></p>')+'</div>' : '')+
+    sec('البيانات', '<div class="row" data-act="csv" data-k="tasks"><div class="row-b"><b>تنزيل المهام</b><small>ملف CSV بينفتح في Google Sheets أو Excel</small></div>'+ic('chev',16)+'</div><div class="row" data-act="csv" data-k="finance"><div class="row-b"><b>تنزيل المالية</b></div>'+ic('chev',16)+'</div><div class="row" data-act="csv" data-k="attendance"><div class="row-b"><b>تنزيل الحضور</b></div>'+ic('chev',16)+'</div><div class="row" data-act="resetDemo"><div class="row-b"><b class="red">'+(DEMO?'إعادة البيانات التجريبية':'امسح كل البيانات وابدأ من جديد')+'</b><small>'+(DEMO?'':'الفريق الأساسي بيرجع، والمهام والمالية بتنمسح')+'</small></div></div>');
+}
+
+/* ===================== EMPLOYEE VIEW ===================== */
+function vEmployee(id){
+  const e = emp(id), t = today(), ws = weekStart(t);
+  const r = attRec(id, t);
+  const open = S.tasks.filter(x=>x.emp===id && x.status!=='done').sort((a,b)=>a.due<b.due?-1:1);
+  const doneW = S.tasks.filter(x=>x.emp===id && x.status==='done' && x.doneAt>=ws).length;
+  const s = attStats([id], ws, t);
+  const h = new Date().getHours();
+  let ci = '';
+  if(!e.manager){
+    if(!r || !r.in) ci = '<button class="btn btn-pri big-btn" data-act="checkin" data-id="'+id+'">سجّل دخولي</button><p class="ps" style="font-size:13.5px;text-align:center">دوامك يبدأ '+startOf(id)+'</p>';
+    else if(!r.out){ const st=attState(id,t); ci = '<div class="list"><div class="row" style="cursor:default"><span class="dot '+st.dot+'"></span><div class="row-b"><b>'+st.t+'</b></div><button class="btn btn-ghost btn-sm" data-act="checkout" data-id="'+id+'">سجّل خروجي</button></div></div>'; }
+    else ci = '<div class="list"><div class="row" style="cursor:default"><span class="dot bg-green"></span><div class="row-b"><b>دوامك اليوم '+((toMin(r.out)-toMin(r.in))/60).toFixed(1)+' ساعة</b><small>يعطيك العافية</small></div></div></div>';
+  }
+  return '<header class="top emp-top"><div class="top-in">'+markSvg('#FFFFFF','#152E63',26)+'<span style="flex:1">هيك بيشوفها '+esc(e.short)+' على جواله</span><button class="btn btn-sm btn-pri" data-act="backManager">رجوع للمدير</button></div></header>'+
+  '<main class="wrap narrow">'+
+    pageHead((h<12?'صباح الخير':'مساء الخير')+' '+esc(e.short), fmtDate(t))+
+    (ci?'<div style="margin-top:22px">'+ci+'</div>':'')+
+    '<section class="blk"><div class="blk-h"><h2>مهامي</h2><span class="mut" style="font-size:13.5px">'+open.length+'</span></div>'+
+      (open.length? '<div class="list">'+open.map(x=>{ const dw=dueWord(x); return '<div class="row" data-act="empTask" data-id="'+x.id+'"><div class="row-b"><b>'+esc(x.title)+'</b><small class="'+dw.c+'">'+dw.t+'</small></div><button class="btn btn-soft btn-sm" data-act="empDone" data-id="'+x.id+'">أنجزت</button></div>'; }).join('')+'</div>' : '<div class="list empty">ما عندك مهام مفتوحة.</div>')+
+    '</section>'+
+    '<section class="blk"><div class="blk-h"><h2>سجّل عملية</h2></div><div class="stats" style="grid-template-columns:1fr 1fr;margin-top:0"><button class="stat" data-act="openFin" data-k="in"><span class="si si-green">'+ic('up',20)+'</span><span class="sv"><b class="green" style="font-size:17px">+ إيراد</b><span>اشتراك، قاعة، دورة</span></span></button><button class="stat" data-act="openFin" data-k="out"><span class="si si-gray">'+ic('down',20)+'</span><span class="sv"><b style="font-size:17px">− مصروف</b><span>فاتورة، مستلزمات</span></span></button></div></section>'+
+    '<p class="ps" style="margin-top:28px;font-size:13.5px;text-align:center">هذا الأسبوع: '+(s.on+s.slight+s.late)+' أيام حضور · '+s.on+' في الوقت · '+doneW+' مهام منجزة</p>'+
+  '</main>';
+}
+
+/* ===================== modals ===================== */
+function openModal(html){
+  $('#modal').innerHTML = '<div class="ov" data-act="closeModal"><div class="sheet" role="dialog" aria-modal="true">'+html+'</div></div>';
+  fixDigits($('#modal'));
+  setTimeout(()=>{ const f = $('#modal [data-focus]'); if(f && window.innerWidth>760) f.focus(); }, 60);
+}
+function closeModal(){ $('#modal').innerHTML=''; M={}; }
+function fixDigits(root){ $$('input[type=number],input[type=date],input[type=time]', root||document).forEach(i=>i.setAttribute('lang','en')); }
+function mhead(title, sub){ return '<div class="m-h"><div><h3>'+title+'</h3>'+(sub?'<small>'+sub+'</small>':'')+'</div><button class="icbtn" data-act="closeModal" aria-label="إغلاق">'+ic('x')+'</button></div>'; }
+function dueOptions(){
+  const t = today(), du = d => { let n=(d-dow(t)+7)%7; if(n===0) n=7; return addDays(t,n); };
+  const opts = [['اليوم',t],['بكرا',addDays(t,1)],['بعد بكرا',addDays(t,2)],['الخميس',du(4)],['الأحد الجاي',du(0)]];
+  const seen = {}; return opts.filter(([,d])=>seen[d]?false:(seen[d]=1));
+}
+function openPlus(){
+  openModal(mhead('شو بدك تضيف؟')+
+    '<button class="opt" data-act="openTask"><span class="oi oi-pri">'+ic('tasks')+'</span><span><b>مهمة جديدة</b><small>لموظف، مع السبب والموعد</small></span></button>'+
+    '<button class="opt" data-act="openFin" data-k="in"><span class="oi oi-green">'+ic('up')+'</span><span><b>إيراد</b><small>اشتراك، قاعة، دورة، تمويل</small></span></button>'+
+    '<button class="opt" data-act="openFin" data-k="out"><span class="oi oi-red">'+ic('down')+'</span><span><b>مصروف</b><small>فاتورة، مستلزمات، رواتب</small></span></button>'+
+    '<button class="opt" data-act="openViol"><span class="oi oi-amber">'+ic('flag')+'</span><span><b>مخالفة</b><small>تأخير، غياب، عدم تسليم</small></span></button>');
+}
+function openTask(pre){
+  pre = pre||{};
+  const edit = pre.editId ? S.tasks.find(x=>x.id===pre.editId) : null;
+  M = {type:'task', emp: pre.emp || (edit&&edit.emp) || null, due: pre.due || (edit&&edit.due) || addDays(today(),1), editId: edit&&edit.id};
+  const title = pre.title!=null ? pre.title : (edit?edit.title:''), why = pre.why!=null ? pre.why : (edit?edit.why:'');
+  const curPri = edit?(edit.pri||''):'';
+  openModal(mhead(edit?'تعديل المهمة':'مهمة جديدة')+
+    '<div class="fld" id="fld_emp"><label>لمين؟</label><div class="chips">'+activeTeam().map(m=>'<button class="pchip '+(M.emp===m.id?'on':'')+'" data-act="pick" data-g="emp" data-v="'+m.id+'">'+av(m,28)+esc(m.short)+'</button>').join('')+'</div></div>'+
+    '<div class="fld" id="fld_title"><label for="f_title">شو المهمة؟</label><input id="f_title" class="inp" placeholder="مثلاً: اتصال بـ 5 عملاء لم يعودوا" value="'+esc(title)+'" data-focus></div>'+
+    '<div class="fld"><label>إمتى؟</label><div class="chips">'+dueOptions().map(([l,d])=>'<button class="chip '+(M.due===d?'on':'')+'" data-act="pick" data-g="due" data-v="'+d+'">'+l+'</button>').join('')+'<input type="date" id="f_due" class="inp inline-date" value="'+M.due+'" aria-label="تاريخ آخر"></div></div>'+
+    '<div class="fld"><label for="f_why">ليش مهمة؟ <span style="font-weight:400">(بتوصل للموظف مع المهمة)</span></label><textarea id="f_why" class="inp" rows="2" placeholder="سطر واحد يكفي">'+esc(why)+'</textarea></div>'+
+    '<div class="fld"><label for="f_pri">بتخدم أي أولوية؟</label><select id="f_pri" class="sel" style="width:100%"><option value="">مهمة تشغيلية</option>'+S.priorities.map(p=>'<option value="'+p.id+'"'+(curPri===p.id?' selected':'')+'>'+esc(p.title)+'</option>').join('')+'</select></div>'+
+    (edit?'':sendBox('f_send','أرسلها له على واتساب الآن','المهمة مع السبب والموعد'))+
+    '<div class="m-f"><button class="btn btn-pri btn-block" data-act="saveTask">'+(edit?'احفظ':'أسند المهمة')+'</button></div>');
+}
+function taskMessage(x){ const e=emp(x.emp); return e.short+'، عندك مهمة جديدة:\n'+x.title+(x.why?'\n\nليش مهمة: '+x.why:'')+'\nالموعد: '+dueText(x.due)+'\n\nبلّغني لما تخلص.'; }
+function openTaskDetail(id){
+  const x = S.tasks.find(t=>t.id===id); if(!x) return;
+  const e = emp(x.emp), dw = dueWord(x), p = pri(x.pri), open = x.status!=='done';
+  openModal(mhead(esc(x.title), esc(e.short)+' · <span class="'+dw.c+'">'+dw.t+'</span>'+(p?' · '+esc(p.title):''))+
+    (x.why?'<div class="why"><small>ليش مهمة</small><p>'+esc(x.why)+'</p></div>':'')+
+    (x.notes?'<p class="mut" style="font-size:14px">'+esc(x.notes)+'</p>':'')+
+    '<div class="m-f">'+(open?
+      '<button class="btn btn-green btn-block" data-act="taskDone" data-id="'+x.id+'">تمّت</button>'+
+      '<button class="btn btn-ghost btn-block" data-act="taskSend" data-id="'+x.id+'">'+ic('send',17)+'أرسلها لـ'+esc(e.short)+' على واتساب</button>'+
+      '<div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" data-act="taskRemind" data-id="'+x.id+'">ذكّر</button><button class="btn btn-ghost" style="flex:1" data-act="taskExt" data-id="'+x.id+'">مدّد يوم</button><button class="btn btn-ghost" style="flex:1" data-act="taskEdit" data-id="'+x.id+'">تعديل</button></div>'
+      : '<button class="btn btn-ghost btn-block" data-act="taskUndo" data-id="'+x.id+'">رجّعها مفتوحة</button>')+
+      '<button class="btn btn-block" style="color:var(--red)" data-act="taskDel" data-id="'+x.id+'">حذف المهمة</button></div>');
+}
+function openFin(kind, pre){
+  pre = pre||{}; kind = kind==='out'?'out':'in';
+  M = {type:'fin', kind, cat: pre.cat||null};
+  openModal(mhead(kind==='in'?'إيراد جديد':'مصروف جديد')+
+    '<div class="kind"><button class="'+(kind==='in'?'on':'')+'" data-act="pick" data-g="fkind" data-v="in">إيراد</button><button class="'+(kind==='out'?'on':'')+'" data-act="pick" data-g="fkind" data-v="out">مصروف</button></div>'+
+    '<div class="amt" id="fld_amt"><input id="f_amt" type="text" inputmode="decimal" min="0" placeholder="0" value="'+esc(pre.amount||'')+'" data-focus aria-label="المبلغ"><span>₪</span></div>'+
+    '<div class="fld"><label>من شو؟</label><div class="chips">'+CATS[kind].map(c=>'<button class="chip '+(M.cat===c?'on':'')+'" data-act="pick" data-g="cat" data-v="'+c+'">'+c+'</button>').join('')+'</div></div>'+
+    '<div class="fld"><label for="f_note">ملاحظة</label><input id="f_note" class="inp" placeholder="'+(kind==='in'?'اسم العميل مثلاً':'اختياري')+'" value="'+esc(pre.note||'')+'"></div>'+
+    (kind==='out' && ui.role!=='manager'?'<p class="note">فوق '+money(S.settings.expenseLimit)+' بيحتاج موافقة المدير.</p>':'')+
+    '<div class="m-f"><button class="btn btn-pri btn-block" data-act="saveFin">سجّل</button></div>');
+}
+function openViol(pre){
+  pre = pre||{};
+  M = {type:'viol', emp: pre.emp||null};
+  const rule = S.rules[1]||S.rules[0];
+  openModal(mhead('مخالفة','بتوصل للموظف بهدوء مع السبب')+
+    '<div class="fld" id="fld_emp"><label>مين؟</label><div class="chips">'+staff().map(m=>'<button class="pchip '+(M.emp===m.id?'on':'')+'" data-act="pick" data-g="emp" data-v="'+m.id+'">'+av(m,28)+esc(m.short)+'</button>').join('')+'</div></div>'+
+    '<div class="fld"><label for="f_vtype">السبب</label><select id="f_vtype" class="sel" style="width:100%">'+S.rules.map(r=>'<option value="'+esc(r.type)+'"'+(r.type===rule.type?' selected':'')+'>'+esc(r.type)+' · '+r.amount+' ₪</option>').join('')+'</select></div>'+
+    '<div class="fld"><label for="f_vdesc">تفاصيل</label><input id="f_vdesc" class="inp" value="'+esc(pre.desc||'')+'" placeholder="مثلاً: دخول 09:50"></div>'+
+    '<input type="hidden" id="f_vamt" value="'+rule.amount+'">'+
+    sendBox('f_vsend','بلّغه على واتساب','بهدوء، مع السبب والخصم')+
+    '<div class="m-f"><button class="btn btn-pri btn-block" data-act="saveViol">سجّل</button></div>');
+}
+function openTeamDetail(id){
+  const m = emp(id), t = today();
+  const r = attRec(id, t);
+  const ts = S.tasks.filter(x=>x.emp===id && x.status!=='done').sort((a,b)=>a.due<b.due?-1:1);
+  const vs = S.violations.filter(v=>v.emp===id && v.status!=='cancelled').slice(-4).reverse();
+  const days = []; let d=t; while(days.length<5){ if(isWorkday(d)) days.unshift(d); d=addDays(d,-1); }
+  let attBtn = '';
+  if(!m.manager){ if(!r||!r.in) attBtn = '<button class="btn btn-ghost" style="flex:1" data-act="mCheckin" data-id="'+id+'">سجّل دخوله</button>'; else if(!r.out) attBtn = '<button class="btn btn-ghost" style="flex:1" data-act="mCheckout" data-id="'+id+'">سجّل خروجه</button>'; }
+  const st = m.manager?null:attState(id,t);
+  openModal('<div class="m-h"><div style="display:flex;gap:12px;align-items:center">'+av(m,48)+'<div><h3>'+esc(m.name)+'</h3><small>'+esc(m.role)+(st?' · <span class="'+st.c+'">'+st.t+'</span>':'')+'</small></div></div><button class="icbtn" data-act="closeModal" aria-label="إغلاق">'+ic('x')+'</button></div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-pri" style="flex:1" data-act="openTask" data-emp="'+id+'">مهمة</button>'+(m.manager?'':'<button class="btn btn-ghost" style="flex:1" data-act="msg" data-id="'+id+'">'+ic('mail',17)+'رسالة</button>')+attBtn+'</div>'+
+    '<div class="sub-h">مهامه ('+ts.length+')</div>'+(ts.length?'<div class="list">'+ts.map(x=>{ const dw=dueWord(x); return '<div class="row" data-act="taskDetail" data-id="'+x.id+'"><button class="cb" data-act="toggleDone" data-id="'+x.id+'" aria-label="تم">'+ic('check',14)+'</button><div class="row-b"><b>'+esc(x.title)+'</b><small class="'+dw.c+'">'+dw.t+'</small></div></div>'; }).join('')+'</div>':'<p class="mut">ما في مهام مفتوحة.</p>')+
+    (m.manager?'':'<div class="sub-h">الحضور</div><div class="mini">'+days.map(dd=>{ const rr=attRec(id,dd); if(!rr||!rr.in) return '<span class="'+(dd===t&&nowMin()<600?'m-gray':'m-red')+'">'+WDS[dow(dd)]+' —</span>'; const c=classify(rr.in, id); return '<span class="m-'+TONE[c]+'">'+WDS[dow(dd)]+' '+rr.in+'</span>'; }).join('')+'</div>')+
+    (vs.length?'<div class="sub-h">المخالفات</div><div class="mini">'+vs.map(v=>'<span class="'+(v.status==='confirmed'?'m-red':'m-amber')+'">'+esc(v.type)+' · '+v.amount+' ₪</span>').join('')+'</div>':'')+
+    (m.manager?'':'<div class="m-f"><button class="btn btn-block" style="color:var(--pri)" data-act="viewAs" data-id="'+id+'">شوف واجهته</button><button class="btn btn-block" style="color:var(--mut)" data-act="openViol" data-emp="'+id+'">سجّل مخالفة</button>'+
+      '<div style="display:flex;gap:8px;margin-top:6px"><button class="btn btn-ghost" style="flex:1" data-act="editMember" data-id="'+id+'">تعديل</button><button class="btn btn-ghost" style="flex:1" data-act="toggleMember" data-id="'+id+'">'+(m.active?'إيقاف مؤقت':'تفعيل')+'</button><button class="btn" style="flex:1;color:var(--red)" data-act="delMember" data-id="'+id+'">حذف من الفريق</button></div></div>'));
+}
+function openDecMenu(id){
+  const d = decisions().find(x=>x.id===id); if(!d) return;
+  openModal(mhead(esc(d.title), esc(d.sub))+'<div class="m-f" style="margin-top:0">'+d.acts.map(([k,label],i)=>'<button class="btn btn-block '+(i===0?'btn-pri':k==='tviol'||k==='fno'||k==='absent'||k==='vno'?'btn-ghost':'btn-ghost')+'" data-act="dec" data-k="'+k+'" data-id="'+esc(d.id)+'">'+label+'</button>').join('')+
+    (S.tasks.some(x=>x.id===id)?'<button class="btn btn-block" style="color:var(--pri)" data-act="taskDetail" data-id="'+id+'">تفاصيل المهمة</button>':'')+'</div>');
+}
+function openViewAs(){
+  openModal(mhead('جرّب واجهة الموظف','هيك بيشوف الموظف يومه')+
+    '<div class="list">'+staff().map(m=>'<div class="row" data-act="viewAs" data-id="'+m.id+'">'+av(m,38)+'<div class="row-b"><b>'+esc(m.name)+'</b><small>'+esc(m.role)+'</small></div>'+ic('chev',16)+'</div>').join('')+'</div>');
+}
+function openKpis(){
+  const w = weekly();
+  const f = (k,l,v) => '<div class="frow"><label for="k_'+k+'">'+l+'</label><input class="inp" type="text" inputmode="decimal" id="k_'+k+'" value="'+(v==null?'':v)+'"></div>';
+  openModal(mhead('أرقام الأسبوع','بيدخلها المسؤول عنها كل أسبوع')+'<div class="list">'+
+    f('retention','الاحتفاظ (%)', w.retention==null?null:Math.round(w.retention*100))+f('newClients','عملاء جدد',w.newClients)+f('downtime','ساعات الأعطال',w.downtime)+f('pipeline','محادثات شراكة',w.pipeline)+
+    '</div><div class="m-f"><button class="btn btn-pri btn-block" data-act="saveKpis">احفظ</button></div>');
+}
+function openPri(id){
+  const p = pri(id); if(!p) return; M = {type:'pri', id, owner:p.owner};
+  openModal(mhead('تعديل الأولوية')+
+    '<div class="fld"><label for="p_title">العنوان</label><input id="p_title" class="inp" value="'+esc(p.title)+'"></div>'+
+    '<div class="fld"><label for="p_goal">الهدف</label><textarea id="p_goal" class="inp" rows="2">'+esc(p.goal)+'</textarea></div>'+
+    '<div class="fld"><label>المسؤول</label><div class="chips">'+activeTeam().map(m=>'<button class="pchip '+(M.owner===m.id?'on':'')+'" data-act="pick" data-g="owner" data-v="'+m.id+'">'+av(m,28)+esc(m.short)+'</button>').join('')+'</div></div>'+
+    '<div class="fld"><label for="p_due">الموعد</label><input id="p_due" type="date" class="inp" value="'+p.due+'"></div>'+
+    '<div class="m-f"><button class="btn btn-pri btn-block" data-act="savePri">احفظ</button></div>');
+}
+function openConfirm(text, fn, arg){
+  M = {type:'confirm', fn, arg};
+  openModal(mhead(esc(text))+'<div class="m-f" style="margin-top:0"><button class="btn btn-danger btn-block" data-act="confirmYes">نعم</button><button class="btn btn-ghost btn-block" data-act="closeModal">لا</button></div>');
+}
+function openEmpDone(id){
+  const x = S.tasks.find(t=>t.id===id); if(!x) return; M = {type:'empDone', id};
+  openModal(mhead('أنجزت؟', esc(x.title))+'<div class="fld"><label for="f_proof">شو النتيجة؟ <span style="font-weight:400">(اختياري)</span></label><textarea id="f_proof" class="inp" rows="3" placeholder="مثلاً: اتصلت بـ 3، أكثر سبب: السعر" data-focus></textarea></div><div class="m-f"><button class="btn btn-green btn-block" data-act="empDoneSave">تمّت</button></div>');
+}
+const MSG_TPL = [
+  ['تذكير مهمة','{name}، تذكير بمهمتك المفتوحة. وين وصلت؟'],
+  ['تذكير دخول','صباح الخير {name}، ما سجّلت دخولك اليوم. كل شي تمام؟'],
+  ['شكر','{name}، شغلك اليوم كان ممتاز. شكراً.'],
+  ['طلب تقرير','{name}، ابعت لي تقرير اليوم قبل ما تطلع.'],
+  ['اجتماع','الفريق، اجتماعنا الأسبوعي بكرا الساعة 12. حضّروا أرقامكم.']
+];
+function openMsg(id){
+  const m = id ? emp(id) : null;
+  M = {type:'msg', id: id||null};
+  const title = m ? 'رسالة لـ'+esc(m.short) : 'رسالة للفريق';
+  const to = m ? m.short : 'الفريق';
+  const tpls = MSG_TPL.filter(([k])=> m ? k!=='اجتماع' : true);
+  openModal(mhead(title, m ? esc(m.role) : staff().length+' موظفين')+
+    '<div class="fld"><label>قوالب سريعة</label><div class="chips">'+tpls.map(([k,t])=>'<button class="chip" data-act="msgTpl" data-t="'+esc(t.replace('{name}', to))+'">'+k+'</button>').join('')+'</div></div>'+
+    '<div class="fld" id="fld_msg"><label for="f_msg">الرسالة</label><textarea id="f_msg" class="inp" rows="4" placeholder="اكتب…" data-focus>'+(m?'مرحبا '+esc(m.short)+'، ':'')+'</textarea></div>'+
+    (m && !realPhone(m.phone) ? '<p class="note">'+esc(m.short)+' ما إله رقم واتساب حقيقي. <button class="lnk" data-act="editMember" data-id="'+m.id+'">حط رقمه</button></p>' : '')+
+    '<div class="m-f">'+
+      (db.bot() ? '<button class="btn btn-pri btn-block" data-act="msgSend">'+ic('send',17)+(m ? 'أرسل لـ'+esc(m.short) : 'أرسل لكل الفريق')+'</button>'
+               : '<button class="btn btn-pri btn-block" data-act="goSettings">فعّل الإرسال المباشر أولاً</button>')+
+    '</div>');
+}
+function openAddMember(pre){
+  pre = pre||{};
+  M = {type:'addMember'};
+  openModal(mhead('موظف جديد', db.on()?'بينضاف مباشرة لقاعدة البيانات':'')+
+    '<div class="fld" id="fld_nm"><label for="nm_name">الاسم الكامل</label><input class="inp" id="nm_name" placeholder="مثلاً: نور ماهر" data-focus></div>'+
+    '<div class="fld"><label for="nm_role">الدور</label><input class="inp" id="nm_role" placeholder="مثلاً: الاستقبال"></div>'+
+    '<div class="fld" id="fld_ph"><label for="nm_phone">واتساب (مع رمز الدولة)</label><input class="inp" id="nm_phone" placeholder="970599123456" inputmode="tel" style="direction:ltr;text-align:start" value="'+esc(pre.phone||'')+'"></div>'+
+    '<div class="m-f"><button class="btn btn-pri btn-block" data-act="addMember">أضف للفريق</button></div>');
+}
+function openPenalty(issueId, pre){
+  const it = (S.issues||[]).find(i=>i.id===issueId) || pre; if(!it) return;
+  const m = emp(it.emp); M = {type:'penalty', issueId: it.id, emp: it.emp, ptype: 'تأخير مهمة'};
+  openModal(mhead('عقوبة لـ'+esc(m.short), esc(it.task||'')+(it.text?' · '+esc(it.text):''))+
+    '<div class="fld"><label>نوع العقوبة</label><div class="chips">'+S.rules.map(r=>'<button class="chip '+(M.ptype===r.type?'on':'')+'" data-act="pick" data-g="ptype" data-v="'+esc(r.type)+'">'+esc(r.type)+' · '+r.amount+' ₪</button>').join('')+'</div></div>'+
+    '<div class="fld"><label for="p_amt">المبلغ (₪)</label><input class="inp" type="text" inputmode="decimal" id="p_amt" value="'+ruleAmt(M.ptype)+'" style="max-width:140px"></div>'+
+    '<div class="fld"><label for="p_note">ملاحظة للموظف <span style="font-weight:400">(اختياري)</span></label><input class="inp" id="p_note" placeholder="مثلاً: ثالث مرة هذا الأسبوع"></div>'+
+    sendBox('p_send','بلّغه على واتساب','نوع العقوبة والمبلغ والسبب')+
+    '<div class="m-f"><button class="btn btn-danger btn-block" data-act="savePenalty">سجّل العقوبة</button><button class="btn btn-ghost btn-block" data-act="dec" data-k="inone" data-id="'+esc(it.id)+'">بدون عقوبة</button></div>');
+}
+async function resolveIssue(id, decision, penalty, note){
+  const it = (S.issues||[]).find(i=>i.id===id);
+  if(it){ it.status='resolved'; it.decision=decision; }
+  S.issues = (S.issues||[]).filter(i=>i.status==='open');
+  commit();
+  if(db.bot() && !DEMO){ try { await db.botFetch('/admin/issue', {method:'POST', body:{id, decision, penalty, note}}); } catch(e){ toast('ما وصل القرار للبوت: '+botErrText(e), {err:true}); } }
+}
+function openWTask(id){
+  const x = (S.wtasks||[]).find(w=>w.id===id); if(!x) return; const m = emp(x.emp);
+  const st = {done:'أُنجزت', active:'جارية الآن', pending:'بانتظار دورها', skipped:'ما أُنجزت', problem:'فيها مشكلة'}[x.status] || x.status;
+  const ext = (x.extensions||[]).reduce((a,e)=>a+Number(e.minutes||0),0);
+  const open = (S.issues||[]).find(i=>i.taskId===x.id && i.status==='open');
+  openModal(mhead(esc(x.title), esc(m.short)+' · '+esc(fmtShort(x.date))+' · '+st)+
+    '<div class="list"><div class="frow"><label>الوقت اللي حدّده</label><span>'+(x.minutes!=null?durWord(x.minutes):'—')+(ext?' + '+durWord(ext)+' زيادة':'')+'</span></div>'+
+    (x.startedAt?'<div class="frow"><label>بدأ</label><span>'+esc(hhmm(x.startedAt))+'</span></div>':'')+(x.doneAt?'<div class="frow"><label>أنجز</label><span>'+esc(hhmm(x.doneAt))+'</span></div>':'')+'</div>'+
+    (x.problem?'<div class="why" style="margin-top:14px"><small>المشكلة اللي كتبها</small><p>'+esc(x.problem)+'</p></div>':'')+
+    (open?'<div class="m-f"><button class="btn btn-danger btn-block" data-act="dec" data-k="ipen" data-id="'+esc(open.id)+'">سجّل عقوبة</button><button class="btn btn-ghost btn-block" data-act="dec" data-k="inone" data-id="'+esc(open.id)+'">بدون عقوبة، تمام</button></div>':'<div class="m-f"><button class="btn btn-ghost btn-block" data-act="closeModal">إغلاق</button></div>'));
+}
+const durWord = m => m>=60 ? (m%60===0 ? (m===60?'ساعة':m===120?'ساعتين':(m/60)+' ساعات') : Math.floor(m/60)+' ساعة و'+(m%60)+' دقيقة') : m+' دقيقة';
+const hhmm = ts => { const d=new Date(ts); return pad(d.getHours())+':'+pad(d.getMinutes()); };
+const WT_LABEL = {done:['أُنجزت','green'], active:['جارية','amber'], pending:['بالانتظار',''], skipped:['ما أُنجزت','red'], problem:['مشكلة','red']};
+function wtaskRow(x){ const m=emp(x.emp); const [l,c]=WT_LABEL[x.status]||[x.status,'']; return '<div class="row" data-act="wtask" data-id="'+esc(x.id)+'">'+av(m,28)+'<div class="row-b"><b>'+esc(x.title)+'</b><small>'+esc(m.short)+(x.minutes!=null?' · '+durWord(x.minutes):'')+(x.problem?' · '+esc(x.problem):'')+'</small></div><span class="pill '+c+'">'+l+'</span></div>'; }
+function openEditMember(id){
+  const m = emp(id); if(!m || !m.name) return; M = {type:'editMember', id, female: m.female?'1':'0'};
+  openModal(mhead('تعديل '+esc(m.short), esc(m.role))+
+    '<div class="fld" id="fld_nm"><label for="nm_name">الاسم الكامل</label><input class="inp" id="nm_name" value="'+esc(m.name)+'"></div>'+
+    '<div class="fld"><label for="nm_role">الدور</label><input class="inp" id="nm_role" value="'+esc(m.role)+'"></div>'+
+    '<div class="fld" id="fld_ph"><label for="nm_phone">واتساب (مع رمز الدولة)</label><input class="inp" id="nm_phone" value="'+esc(isDemoPhone(m.phone)?'':(m.phone||''))+'" placeholder="970599123456" inputmode="tel" style="direction:ltr;text-align:start" data-focus></div>'+
+    '<div class="fld"><label>كيف يخاطبه البوت؟</label><div class="chips"><button class="chip '+(m.female?'':'on')+'" data-act="pick" data-g="female" data-v="0">مذكّر (ابعت، أنجزت)</button><button class="chip '+(m.female?'on':'')+'" data-act="pick" data-g="female" data-v="1">مؤنّث (ابعتي، أنجزتي)</button></div></div>'+
+    '<div class="fld"><label for="nm_start">بداية دوامه <span style="font-weight:400">(فاضي = '+esc(S.settings.start)+' مثل الكل)</span></label><input class="inp" type="time" id="nm_start" value="'+esc(m.start||'')+'" style="max-width:160px"></div>'+
+    (realPhone(m.phone)?'':'<p class="note">'+(m.phone?'الرقم الحالي تجريبي':'ما في رقم')+'، فما بتوصله رسائل.</p>')+
+    '<div class="m-f"><button class="btn btn-pri btn-block" data-act="saveMember">احفظ</button></div>');
+}
+function openReportSend(){
+  const r = buildReport(ui.rtype, ui.rdate, ui.remp||null);
+  M = {type:'rsend', to: ui.remp || 'me', text: reportText(r)};
+  const opts = [['me','لي'],['team','الفريق كله']].concat(activeTeam().filter(m=>!m.manager).map(m=>[m.id, m.short]));
+  openModal(mhead('أرسل التقرير', esc(r.title))+
+    '<div class="fld"><label>لمين؟</label><div class="chips">'+opts.map(([k,l])=>'<button class="chip '+(M.to===k?'on':'')+'" data-act="pick" data-g="to" data-v="'+esc(k)+'">'+esc(l)+'</button>').join('')+'</div></div>'+
+    '<div class="why" style="white-space:pre-wrap;max-height:190px;overflow:auto;font-size:13px;margin-top:0">'+esc(M.text)+'</div>'+
+    '<div class="m-f">'+(db.bot()?'<button class="btn btn-pri btn-block" data-act="rsendGo">'+ic('send',17)+'أرسل</button>':'<button class="btn btn-pri btn-block" data-act="goSettings">فعّل الإرسال المباشر أولاً</button>')+'</div>');
+}
+function openEmpTask(id){
+  const x = S.tasks.find(t=>t.id===id); if(!x) return; const dw = dueWord(x);
+  openModal(mhead(esc(x.title), '<span class="'+dw.c+'">'+dw.t+'</span>')+(x.why?'<div class="why"><small>ليش هالمهمة مهمة</small><p>'+esc(x.why)+'</p></div>':'')+
+    '<div class="m-f">'+(x.status==='new'?'<button class="btn btn-ghost btn-block" data-act="empStart" data-id="'+x.id+'">بدأت فيها</button>':'')+'<button class="btn btn-green btn-block" data-act="empDone" data-id="'+x.id+'">أنجزت</button></div>');
+}
+
+/* ===================== toast & helpers ===================== */
+function toast(msg, opt){
+  opt = opt||{};
+  const el = document.createElement('div'); el.className = 'tst'+(opt.err?' err':'');
+  el.innerHTML = '<span>'+esc(msg)+'</span>'+(opt.act?'<button class="tst-a" data-act="'+esc(opt.act)+'"'+(opt.id?' data-id="'+esc(opt.id)+'"':'')+(opt.view?' data-view="'+esc(opt.view)+'"':'')+'>'+esc(opt.label||'فتح')+'</button>':'');
+  $('#toast').appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, opt.act?8000:(opt.err?5000:3500));
+}
+const val = s => { const e=$(s); return e?toLatinDigits(e.value).trim():''; };
+function markErr(id){ const f=$('#'+id); if(f){ f.classList.add('err'); setTimeout(()=>f.classList.remove('err'),1600); } }
+function download(name, text){
+  try { const blob = new Blob(['﻿'+text],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500); toast('نزل الملف: '+name); }
+  catch(e){ toast('ما قدرت أنزّل الملف هنا', {err:true}); }
+}
+const csvCell = v => { v = v==null?'':String(v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+const csv = rows => rows.map(r=>r.map(csvCell).join(',')).join('\n');
+function copyText(text){
+  const fallback = () => { const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); let ok=false; try{ ok=document.execCommand('copy'); }catch(e){} ta.remove(); toast(ok?'نسخته. الصقه في الواتساب':'ما قدرت أنسخ، استخدم زر الواتساب', ok?{}:{err:true}); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(()=>toast('نسخته. الصقه في الواتساب'), fallback); else fallback();
+}
+
+/* ===================== database (Airtable) + bot ===================== */
+const db = {
+  on(){ return !!(S.db && S.db.pat && S.db.base); },
+  bot(){ return !!(S.db && S.db.botUrl && S.db.botSecret); },
+  url(path){ return 'https://api.airtable.com/v0/'+encodeURIComponent(S.db.base)+'/'+encodeURIComponent(S.db.table||'People')+(path||''); },
+  async req(method, url, body){
+    const r = await fetch(url, {method, headers:{'Authorization':'Bearer '+S.db.pat, 'Content-Type':'application/json'}, body: body?JSON.stringify(body):undefined});
+    if(!r.ok){ let msg=''; try{ const j=await r.json(); msg=(j.error&&(j.error.message||j.error.type))||''; }catch(e){} throw new Error(r.status+(msg?' · '+msg:'')); }
+    return r.json();
+  },
+  mapIn(rec){
+    const f = rec.fields||{}; const name = String(f.Name||'').trim(); const rawPhone = String(f.Phone||'');
+    const inactive = rawPhone==='INACTIVE' || (f.Status && f.Status!=='active');
+    return {airId:rec.id, name, short:name.split(/\s+/)[0]||name, role:String(f.Title||f.JobTitle||(f.Role==='admin'?'المدير العام':'')), phone:inactive?'':rawPhone.replace(/\D/g,''), active:!inactive, manager:f.Role==='admin', aliases:[name.split(/\s+/)[0]]};
+  },
+  async pullPeople(){ const out=[]; let off=''; do { const j = await this.req('GET', this.url('?pageSize=100'+(off?'&offset='+off:''))); j.records.forEach(r=>out.push(this.mapIn(r))); off=j.offset||''; } while(off); return out; },
+  async addPerson(m){ const j = await this.req('POST', this.url(), {records:[{fields:{Name:m.name, Phone:'+'+m.phone, Role:'employee', Status:'active'}}]}); return j.records[0].id; },
+  async setActive(m, active){ await this.req('PATCH', this.url('/'+m.airId), {fields:{Phone: active ? '+'+m.phone : 'INACTIVE'}}); },
+  async deletePerson(m){ await this.req('DELETE', this.url('/'+m.airId)); },
+  async updatePerson(m, u){ const f = {Name:u.name}; if(m.active && u.phone) f.Phone = '+'+u.phone; await this.req('PATCH', this.url('/'+m.airId), {fields:f}); },
+  botBase(){ return String(S.db.botUrl||BOT_DEFAULT).replace(/\/+$/,''); },
+  async botFetch(path, o){
+    o = o||{}; let r;
+    const headers = {'X-Admin-Secret': S.db.botSecret||''}; if(o.body) headers['Content-Type'] = 'application/json';
+    try { r = await fetch(this.botBase()+path, {method:o.method||'GET', headers, body:o.body?JSON.stringify(o.body):undefined, cache:'no-store'}); }
+    catch(e){ const er = new Error('NETWORK'); er.code = 'NETWORK'; throw er; }
+    if(o.raw && r.ok) return r;
+    let j = null; try { j = await r.json(); } catch(e){}
+    if(!r.ok){ const er = new Error((j&&j.error)||('HTTP_'+r.status)); er.code = er.message; er.data = j; throw er; }
+    return j||{};
+  },
+  async send(phones, text){ return this.botFetch('/admin/send', {method:'POST', body:{to:phones, text}}); }
+};
+function mergePeople(remote){
+  const byAir = {}; S.team.forEach(m=>{ if(m.airId) byAir[m.airId]=m; });
+  const out = [];
+  remote.forEach((r,i)=>{
+    let loc = byAir[r.airId];
+    if(!loc) loc = S.team.find(m=>!m.airId && !m.deleted && (m.name===r.name || m.short===r.short || (r.phone && m.phone===r.phone)));
+    if(loc){ Object.assign(loc, {airId:r.airId, name:r.name, short:r.short, manager:r.manager, active:r.active, deleted:false}); if(r.phone) loc.phone=r.phone; if(r.role) loc.role=r.role; loc.aliases=r.aliases; out.push(loc); }
+    else out.push(Object.assign({id:uid('m'), color:PALETTE[i%PALETTE.length], role:r.role||'موظف'}, r));
+  });
+  if(out.length){ S.team.forEach(m=>{ if(!out.includes(m)) m.deleted=true; }); out.forEach(m=>{ if(!S.team.includes(m)) S.team.push(m); }); }
+  if(!S.team.some(m=>m.manager && !m.deleted)){ const first = S.team.find(m=>!m.deleted); if(first) first.manager=true; }
+}
+async function dbRefresh(quiet){
+  if(!db.on()) return;
+  try { const r = await db.pullPeople(); mergePeople(r); ui.dbStatus='متصل · '+r.length+' في الجدول'; save(); render(); if(!quiet) toast('اتحدّث الفريق من قاعدة البيانات'); }
+  catch(e){ ui.dbStatus='فشل الاتصال · '+e.message; render(); if(!quiet) toast('ما قدرت أوصل لقاعدة البيانات: '+e.message, {err:true}); }
+}
+
+/* ===================== WhatsApp: direct send via bot ===================== */
+function botErrText(e){
+  const c = String((e && (e.code||e.message)) || '');
+  if(c==='NETWORK') return 'ما في اتصال بالبوت. افتح الملف في المتصفح وتأكد من الإنترنت';
+  if(c==='BAD_SECRET') return 'المفتاح غلط. الصقه من جديد في الإعدادات';
+  if(c==='ADMIN_SECRET_NOT_SET') return 'البوت مش مجهّز للإرسال من الواجهة';
+  if(c.indexOf('WHATSAPP_')===0) return 'واتساب الشركة مش مربوط بالبوت';
+  if(c==='HTTP_502'||c==='HTTP_503'||c==='HTTP_504') return 'البوت بيعيد التشغيل. جرّب بعد دقيقة';
+  if(c==='HTTP_404') return 'رابط البوت غلط';
+  if(c==='NO_QR') return 'الكود مش جاهز لسا';
+  return 'ما زبطت: '+c;
+}
+function waLabel(){
+  const s = ui.wa.status;
+  if(!S.db.botSecret) return {t:'مش مفعّل. الصق المفتاح', c:'mut'};
+  if(!s) return {t:'جارٍ الفحص…', c:'mut'};
+  if(s==='WORKING') return {t:'مربوط'+(ui.wa.me?' · +'+ui.wa.me:''), c:'green'};
+  if(s==='ERR') return {t:ui.wa.err||'فشل', c:'red'};
+  if(s==='STARTING') return {t:'بيشتغل…', c:'amber'};
+  return {t:'واتساب مش مربوط', c:'amber'};
+}
+function sendBox(id, label, sub){
+  if(!db.bot()) return '<p class="ps" style="font-size:13px">للإرسال المباشر على واتساب <button class="lnk" data-act="goSettings">فعّل الإرسال</button>.</p>';
+  return '<label class="ck"><input type="checkbox" id="'+id+'" checked><span>'+label+(sub?'<small>'+sub+'</small>':'')+'</span></label>';
+}
+function renderKeep(){ const i=$('#cmdInput'), v=i?i.value:'', f=!!(i&&document.activeElement===i); render(); const j=$('#cmdInput'); if(j&&v) j.value=v; if(j&&f) j.focus(); }
+async function waPing(quiet){
+  if(!db.bot()) return;
+  try { const j = await db.botFetch('/admin/ping'); ui.wa = {status:j.whatsapp||'UNKNOWN', me:j.me||''}; }
+  catch(e){ ui.wa = {status:'ERR', err:botErrText(e), code:e.code}; }
+  if(ui.role==='manager') renderKeep();
+  if(!quiet){ const w = waLabel(), ok = ui.wa.status==='WORKING', err = ui.wa.status==='ERR'; toast(ok ? 'واتساب الشركة '+w.t : w.t, ok?{}:{err:true, act: err?'':'waLink', label:'اربط واتساب'}); }
+}
+// people: array of team members. Sends one WhatsApp message to each, directly through the bot.
+async function sendWA(people, text, o){
+  o = o||{};
+  people = (Array.isArray(people)?people:[people]).filter(m=>m && m.name);
+  if(!db.bot()){ toast('الإرسال المباشر مش مفعّل', {err:true, act:'goSettings', label:'فعّله'}); return {ok:false}; }
+  const good = people.filter(m=>realPhone(m.phone)), bad = people.filter(m=>!realPhone(m.phone));
+  if(!good.length){
+    const one = bad.length===1 ? bad[0] : null;
+    toast(one ? one.short+' ما إله رقم واتساب حقيقي' : 'ما في أرقام واتساب حقيقية', {err:true, act:one?'editMember':'go', id:one?one.id:'', view:'settings', label:one?'حط رقمه':'الفريق'});
+    return {ok:false};
+  }
+  try {
+    const j = await db.send(good.map(m=>m.phone), text);
+    const failed = Array.isArray(j.failed) ? j.failed : [];
+    const sent = j.sent!=null ? j.sent : good.length - failed.length;
+    const missed = good.filter(m=>failed.includes(m.phone)).concat(bad).map(m=>m.short);
+    ui.wa.status = 'WORKING';
+    addLog(o.logAct||'رسالة واتساب', o.logWho || (people.length===1 ? people[0].short : 'الفريق'), (o.logNote||text.split('\n')[0]).slice(0,80)+' · واتساب '+sent+'/'+people.length);
+    commit();
+    if(!sent){ toast('ما وصلت ولا رسالة. جرّب كمان شوي', {err:true}); return {ok:false}; }
+    if(missed.length) toast((o.okMsg||'انبعتت')+' · ما وصلت لـ'+missed.join('، '), {err:true});
+    else toast(o.okMsg || ('وصلت لـ'+(good.length===1 ? good[0].short : sent+' أشخاص')));
+    return {ok:true, sent};
+  } catch(e){
+    const c = String(e.code||'');
+    if(c.indexOf('WHATSAPP_')===0){ ui.wa = {status:c.slice(9), me:''}; renderKeep(); }
+    toast(botErrText(e), {err:true, act: c.indexOf('WHATSAPP_')===0 ? 'waLink' : (c==='BAD_SECRET'||c==='HTTP_404' ? 'goSettings' : ''), label: c.indexOf('WHATSAPP_')===0 ? 'اربط واتساب' : 'الإعدادات'});
+    return {ok:false, err:e};
+  }
+}
+let waLinkRun = 0;
+async function openWaLink(){
+  if(!db.bot()){ H.goSettings(); toast('الصق المفتاح أولاً', {err:true}); return; }
+  const run = ++waLinkRun; M = {type:'waLink'};
+  openModal(mhead('اربط واتساب الشركة','مرة وحدة، وبعدها كل شي بيطلع مباشرة')+
+    '<ol class="steps"><li>افتح واتساب على جوال الشركة</li><li>الإعدادات ← الأجهزة المرتبطة ← ربط جهاز</li><li>وجّه الكاميرا على الكود</li></ol>'+
+    '<div class="qrbox" id="qrBox"><span class="mut">جارٍ تجهيز الكود…</span></div>'+
+    '<p class="ps" style="text-align:center;font-size:13px">الكود بيتجدد لحاله. خلّي هالشاشة مفتوحة لحد ما يربط.</p>');
+  const alive = () => waLinkRun===run && M.type==='waLink' && !!$('#qrBox');
+  const fail = t => { if(alive()) $('#qrBox').innerHTML = '<div><p class="red" style="font-weight:600;margin-bottom:12px">'+esc(t)+'</p><button class="btn btn-soft btn-sm" data-act="waLink">جرّب مرة ثانية</button></div>'; };
+  try { await db.botFetch('/admin/wa/start', {method:'POST'}); } catch(e){ fail(botErrText(e)); return; }
+  let lastQr = 0, restarts = 0, url = '';
+  for(let i=0; i<120 && alive(); i++){
+    let st = '';
+    try { const j = await db.botFetch('/admin/ping'); st = j.whatsapp||''; ui.wa = {status:st, me:j.me||''}; }
+    catch(e){ fail(botErrText(e)); return; }
+    if(!alive()) return;
+    if(st==='WORKING'){ closeModal(); renderKeep(); toast('انربط واتساب الشركة'+(ui.wa.me?' · +'+ui.wa.me:'')+'. الإرسال صار مباشر'); return; }
+    if(st==='SCAN_QR_CODE' && Date.now()-lastQr > 12000){
+      try { const r = await db.botFetch('/admin/wa/qr', {raw:true}); const b = await r.blob(); if(!alive()) return; if(url) URL.revokeObjectURL(url); url = URL.createObjectURL(b); $('#qrBox').innerHTML = '<img alt="كود ربط واتساب" src="'+url+'">'; lastQr = Date.now(); } catch(e){}
+    }
+    if((st==='FAILED'||st==='STOPPED') && restarts<3){ restarts++; $('#qrBox').innerHTML = '<span class="mut">جارٍ تجهيز كود جديد…</span>'; lastQr = 0; try { await db.botFetch('/admin/wa/start', {method:'POST'}); } catch(e){} }
+    await sleep(3000);
+  }
+  fail('انتهى الوقت قبل ما ينربط');
+}
+
+/* ===================== actions ===================== */
+/* ===================== attendance from the WhatsApp group ===================== */
+function lateViolation(id, date, tm, src){
+  if(!isWorkday(date) || !tm) return null;
+  const late = toMin(tm) - toMin(startOf(id));
+  if(late <= S.settings.grace) return null;
+  if(S.violations.some(v=>v.emp===id && v.date===date && v.type==='تأخير دوام')) return null;
+  const type = 'تأخير دوام'; const amount = ruleAmt(type);
+  S.violations.push({id:uid('v'), date, emp:id, type, desc:'دخول '+tm+' (تأخير '+late+' دقيقة)'+(src?' · '+src:''), amount, status:'review'});
+  addLog('مخالفة تلقائية', emp(id).short, type+' · '+amount+' ₪ بانتظار التأكيد');
+  return type;
+}
+function unknownSenders(recs, known){
+  const u = {};
+  recs.filter(r=>!known(r.emp)).forEach(r=>{ const k = r.phone || r.emp; const x = u[k] || (u[k] = {phone:r.phone||'', name:r.name||'', days:0, last:''}); x.days++; if(r.date > x.last){ x.last = r.date; x.in = r.in; } });
+  return Object.values(u).sort((a,b)=>a.last<b.last?1:-1);
+}
+let attSyncing = false;
+async function syncAttendance(quiet){
+  if(!db.bot() || attSyncing || DEMO) return;
+  attSyncing = true;
+  try {
+    const t = today();
+    let changed = 0; let changedFeed = false;
+    let j;
+    try { j = await db.botFetch('/admin/feed?from='+addDays(t,-35)); } catch(e){ if(e.code==='HTTP_404') j = await db.botFetch('/admin/attendance?from='+addDays(t,-35)+'&to='+t); else throw e; }
+    const recs = Array.isArray(j.records) ? j.records : [];
+    if(Array.isArray(j.wtasks)){ const known2 = id => S.team.find(x=>x.id===id && !x.deleted); const nw = j.wtasks.filter(w=>known2(w.emp)); if(JSON.stringify(nw)!==JSON.stringify(S.wtasks||[])){ S.wtasks = nw; changedFeed = true; } }
+    if(Array.isArray(j.issues)){ const open = j.issues.filter(i=>i.status==='open' && S.team.some(x=>x.id===i.emp && !x.deleted)); if(JSON.stringify(open)!==JSON.stringify(S.issues||[])){ const before=(S.issues||[]).map(i=>i.id); S.issues = open; changedFeed = true; open.filter(i=>!before.includes(i.id)).forEach(i=>addLog('من القروب', emp(i.emp).short, issueTitle(i))); } }
+    if(j.stateAt && Number(j.stateAt) > Number(S.updatedAt||0) && !$('#modal').innerHTML){ await pullState(); }
+    const known = id => S.team.find(x=>x.id===id && !x.deleted);
+    recs.forEach(r=>{
+      const m = known(r.emp); if(!m || !r.in || !r.date) return;
+      const a = attRec(m.id, r.date);
+      if(!a){
+        S.attendance.push({date:r.date, emp:m.id, in:r.in, out:r.out||null, src:'group'}); changed++;
+        if(r.date===t) addLog('تسجيل دخول', m.short, 'من قروب الحضور '+r.in);
+        if(r.date===t) lateViolation(m.id, r.date, r.in, 'من القروب');
+      } else {
+        if(!a.in || a.absent){
+          a.in = r.in; delete a.absent; a.src = 'group'; changed++;
+          S.violations.filter(v=>v.emp===m.id && v.date===r.date && v.type==='غياب بدون عذر' && v.status==='review').forEach(v=>{ v.status='cancelled'; });
+          if(r.date===t) lateViolation(m.id, r.date, r.in, 'من القروب');
+        }
+        if(r.out && a.out!==r.out && (!a.out || a.src==='group')){ a.out = r.out; changed++; }
+      }
+    });
+    const todays = recs.filter(r=>r.date===t && known(r.emp)).map(r=>r.in).sort();
+    ui.grp = {group:j.group||null, count:todays.length, last:todays.length?todays[todays.length-1]:null, unknown:unknownSenders(recs, known), at:nowHM()};
+    if(changed) save(); else if(changedFeed) saveLocal();
+    if(ui.role==='manager') renderKeep();
+    if(!quiet) toast(j.group ? (changed ? 'وصلت '+changed+' تسجيلات جديدة من القروب' : 'الحضور محدّث من القروب') : 'قروب الحضور مش مربوط لسا', j.group?{}:{err:true});
+  } catch(e){ if(!quiet) toast(botErrText(e), {err:true}); }
+  finally { attSyncing = false; }
+}
+let pushT = null;
+function pushTeamSoon(){ if(!db.bot()) return; clearTimeout(pushT); pushT = setTimeout(()=>{ pushTeam().then(()=>syncAttendance(true)); }, 800); }
+async function pushTeam(){
+  if(!db.bot() || DEMO) return;
+  try {
+    const team = listTeam().map(m=>({id:m.id, name:m.name, short:m.short, aliases:m.aliases||[], phone:cleanPhone(m.phone), manager:!!m.manager, active:m.active!==false, start:m.start||'', female:!!m.female}));
+    const j = await db.botFetch('/admin/team', {method:'POST', body:{team}});
+    let adopted = 0;
+    (j.team||[]).forEach(x=>{ const m = S.team.find(y=>y.id===x.id); if(m && !realPhone(m.phone) && realPhone(x.phone)){ m.phone = x.phone; adopted++; } });
+    if(adopted){ save(); if(ui.role==='manager') renderKeep(); }
+  } catch(e){}
+}
+async function botBoot(quiet){
+  await waPing(quiet);
+  if(ui.wa.status==='ERR') return;
+  const pulled = await pullState();
+  if(!pulled) pushStateSoon();
+  await pushTeam();
+  await syncAttendance(true);
+}
+function grpRows(){
+  const g = ui.grp;
+  if(!g) return '<div class="frow"><label>الحالة</label><span class="mut" style="font-size:14px">جارٍ الفحص…</span></div>';
+  if(!g.group) return '<div class="frow"><label>الحالة</label><span class="amber" style="font-size:14px">مش مربوط</span></div>'+
+    '<div style="padding:12px 16px"><ol class="steps" style="margin:0">'+
+    '<li>ضيف رقم البوت <b dir="ltr">'+esc(ui.wa.me?'+'+ui.wa.me:'(الرقم اللي ربطته)')+'</b> لقروب الحضور</li>'+
+    '<li>اكتب في القروب: <b>زمام حضور</b></li>'+
+    '<li>اضغط «حدّث الآن»</li></ol></div>';
+  return '<div class="frow"><label>الحالة</label><span class="green" style="font-size:14px">مربوط</span></div>'+
+    '<div class="frow"><label>اليوم</label><span style="font-size:14px">'+(g.count ? g.count+' سجّلوا · آخر واحد '+esc(g.last) : 'ما حد سجّل لسا')+'</span></div>'+
+(g.unknown.length ? '<div style="padding:12px 16px 4px"><p class="note" style="margin:0 0 8px">ناس بيسجّلوا في القروب ومش مضافين للفريق. اضغط «أضفه» واكتب اسمه، وحضوره القديم بينحسب له.</p></div>'+
+      g.unknown.map(u=>'<div class="frow"><label><span dir="ltr">'+(u.phone?'+'+esc(u.phone):esc(u.name))+'</span><br><small class="mut" style="font-weight:400">سجّل '+u.days+' أيام · آخر مرة '+esc(fmtShort(u.last))+' '+esc(u.in||'')+'</small></label><button class="btn btn-soft btn-sm" data-act="addFromGroup" data-phone="'+esc(u.phone)+'">أضفه</button></div>').join('') : '')+
+    '<div style="padding:10px 16px 14px"><p class="ps" style="font-size:13px;margin:0">أول رسالة لكل موظف بالصبح = دخول، ورسالة فيها «خروج» = خروج. ولما يكتب مهامه بنقاط، البوت بيسأله كم بدو وقت لكل وحدة، وبيرجع يسأله لما يخلص الوقت: أنجزت / مشكلة / بدي وقت. اللي ما بينجز بيوصلك هون بـ«يحتاج قرارك».</p></div>';
+}
+function doCheckin(id, tm){
+  const t = today(); tm = tm || nowHM();
+  let r = attRec(id,t);
+  if(r && r.in){ toast(emp(id).short+' مسجّل من '+r.in); return; }
+  if(r){ r.in = tm; delete r.absent; } else S.attendance.push({date:t, emp:id, in:tm, out:null});
+  const late = toMin(tm) - toMin(startOf(id));
+  addLog('تسجيل دخول', emp(id).short, late>0?'تأخير '+late+' دقيقة':'في الوقت');
+  let msg = 'سجّلت دخول '+emp(id).short+' '+tm;
+  if(late > S.settings.grace){
+    const type = 'تأخير دوام'; const amount = ruleAmt(type);
+    S.violations.push({id:uid('v'), date:t, emp:id, type, desc:'دخول '+tm+' (تأخير '+late+' دقيقة)', amount, status:'review'});
+    addLog('مخالفة تلقائية', emp(id).short, type+' · '+amount+' ₪ بانتظار التأكيد');
+    msg += ' · تأخير، والمخالفة بانتظار تأكيد المدير';
+  }
+  commit(); toast(msg);
+}
+function doCheckout(id){
+  const r = attRec(id,today()); if(!r||!r.in){ toast('ما في تسجيل دخول اليوم',{err:true}); return; }
+  r.out = nowHM(); addLog('تسجيل خروج', emp(id).short, ((toMin(r.out)-toMin(r.in))/60).toFixed(1)+' ساعة');
+  commit(); toast('سجّلت خروج '+emp(id).short+' '+r.out);
+}
+function markDone(id, note, by){
+  const x = S.tasks.find(t=>t.id===id); if(!x) return;
+  const wasLate = tStatus(x)==='late';
+  x.status='done'; x.doneAt=today(); if(note) x.notes = (x.notes?x.notes+' · ':'')+note;
+  if(wasLate) x.notes = (x.notes?x.notes+' · ':'')+'أُنجزت متأخرة '+dayword(diffDays(today(),x.due));
+  addLog('إنجاز مهمة', emp(x.emp).short, x.id+' '+x.title+(by?' (بلّغ '+by+')':''));
+  commit(); toast('تمّت: '+x.title);
+}
+async function remindTask(x){
+  if(!x) return; const e = emp(x.emp);
+  const text = e.short+'، تذكير بمهمتك: '+x.title+'\nالموعد '+(x.due<today()?'كان ':'')+dueText(x.due)+'. وين وصلت؟ لو في شي معطّلك احكيلي.';
+  const r = await sendWA([e], text, {logAct:'تذكير', logNote:x.id+' '+x.title, okMsg:'وصل التذكير لـ'+e.short});
+  if(r.ok){ x.reminders = (x.reminders||0)+1; commit(); }
+}
+function extendTask(x){ x.due = x.due<today() ? addDays(today(),1) : addDays(x.due,1); addLog('تمديد مهمة', emp(x.emp).short, x.id+' إلى '+x.due); commit(); toast('الموعد الجديد: '+dueText(x.due)); }
+
+const H = {
+  nav(d){ ui.view=d.view; ui.allDec=false; closeModal(); render(); window.scrollTo(0,0); },
+  go(d){ ui.view=d.view; if(d.filter) ui.taskFilter=d.filter; if(d.rtype){ ui.rtype=d.rtype; ui.rdate=today(); } closeModal(); render(); window.scrollTo(0,0); },
+  closeModal(){ closeModal(); },
+  plus(){ openPlus(); },
+  cmdEx(d){ runCmd(d.q); },
+  toggleAllDec(){ ui.allDec=!ui.allDec; render(); },
+  decMenu(d){ openDecMenu(d.id); },
+  openTask(d){ openTask(d.emp?{emp:d.emp}:{}); },
+  openFin(d){ openFin(d.k); },
+  openViol(d){ openViol(d.emp?{emp:d.emp}:{}); },
+  viewAsMenu(){ openViewAs(); },
+  viewAs(d){ ui.role=d.id; closeModal(); render(); window.scrollTo(0,0); },
+  backManager(){ ui.role='manager'; render(); window.scrollTo(0,0); },
+  pick(d){
+    const g=d.g, v=d.v;
+    if(g==='fkind'){ openFin(v,{amount:val('#f_amt'), note:val('#f_note')}); return; }
+    M[g]=v;
+    if(g==='ptype'){ const a=$('#p_amt'); if(a) a.value=ruleAmt(v); }
+    if(g==='fu'){ S.settings.followups=v; save(); $$('[data-g="fu"]').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); return; }
+    $$('[data-g="'+g+'"]', $('#modal')).forEach(c=>c.classList.toggle('on', c.dataset.v===v));
+    if(g==='due'){ const di=$('#f_due'); if(di) di.value=v; }
+  },
+  saveTask(){
+    const title = val('#f_title'), why = val('#f_why'), due = val('#f_due') || M.due, p = val('#f_pri')||null;
+    if(!M.emp){ markErr('fld_emp'); toast('اختار لمين المهمة',{err:true}); return; }
+    if(!title){ markErr('fld_title'); toast('اكتب شو المهمة',{err:true}); return; }
+    if(M.editId){ const x=S.tasks.find(t=>t.id===M.editId); Object.assign(x,{emp:M.emp,title,why,pri:p,due}); addLog('تعديل مهمة', emp(M.emp).short, x.id); closeModal(); commit(); toast('انحفظ التعديل'); return; }
+    const send = !!($('#f_send') && $('#f_send').checked);
+    const x = {id:nextTaskId(), emp:M.emp, title, why, pri:p, due, status:'new', created:today(), doneAt:null, notes:'', reminders:0};
+    S.tasks.push(x); addLog('تعيين مهمة', emp(x.emp).short, x.id+' '+x.title+' · '+fmtShort(due));
+    closeModal(); commit();
+    const e = emp(x.emp);
+    if(send) sendWA([e], taskMessage(x), {logAct:'إرسال مهمة', logNote:x.id+' '+x.title, okMsg:'انسجلت المهمة ووصلت لـ'+e.short+' على واتساب'});
+    else toast('انسجلت المهمة لـ'+e.short);
+  },
+  taskDetail(d){ openTaskDetail(d.id); },
+  toggleDone(d){ const x=S.tasks.find(t=>t.id===d.id); if(!x) return; const inTeam = $('#modal .sheet') && M.type==='team'; if(x.status==='done'){ x.status='doing'; x.doneAt=null; addLog('إرجاع مهمة', emp(x.emp).short, x.id); commit(); } else markDone(x.id); if(inTeam) { openTeamDetail(x.emp); M.type='team'; } },
+  taskDone(d){ closeModal(); markDone(d.id); },
+  taskUndo(d){ const x=S.tasks.find(t=>t.id===d.id); x.status='doing'; x.doneAt=null; closeModal(); commit(); },
+  taskExt(d){ closeModal(); extendTask(S.tasks.find(t=>t.id===d.id)); },
+  taskRemind(d){ closeModal(); remindTask(S.tasks.find(t=>t.id===d.id)); },
+  taskSend(d){ const x=S.tasks.find(t=>t.id===d.id); if(!x) return; const e=emp(x.emp); closeModal(); sendWA([e], taskMessage(x), {logAct:'إرسال مهمة', logNote:x.id+' '+x.title, okMsg:'وصلت المهمة لـ'+e.short}); },
+  taskEdit(d){ openTask({editId:d.id}); },
+  taskDel(d){ openConfirm('نحذف المهمة؟', 'delTask', d.id); },
+  confirmYes(){ const f=CONFIRM[M.fn]; const a=M.arg; closeModal(); if(f){ const p=f(a); if(p&&p.catch) p.catch(e=>toast(e.message,{err:true})); } },
+  tfilter(d){ ui.taskFilter=d.k; render(); },
+  dec(d){
+    const k=d.k, id=d.id; closeModal();
+    if(k==='ext') extendTask(S.tasks.find(t=>t.id===id));
+    else if(k==='remind') remindTask(S.tasks.find(t=>t.id===id));
+    else if(k==='tviol'){ const x=S.tasks.find(t=>t.id===id); const n=diffDays(today(),x.due); const type='تأخير مهمة'; const r=S.rules.find(z=>z.type===type); S.violations.push({id:uid('v'),date:today(),emp:x.emp,type,desc:x.title,amount:r?r.amount:0,status:'confirmed'}); x.violated=true; addLog('مخالفة', emp(x.emp).short, type); commit(); toast('سجّلت مخالفة على '+emp(x.emp).short+': '+money(r?r.amount:0)); }
+    else if(k==='vok'||k==='vno'){ const v=S.violations.find(z=>z.id===id); v.status=k==='vok'?'confirmed':'cancelled'; addLog(k==='vok'?'تأكيد مخالفة':'إلغاء مخالفة', emp(v.emp).short, v.type); commit(); toast(k==='vok'?'تأكدت المخالفة':'انلغت المخالفة'); }
+    else if(k==='fok'){ const f=S.finance.find(z=>z.id===id); delete f.pending; addLog('موافقة صرف', f.by||'', f.cat+' '+money(f.amount)); commit(); toast('وافقت على المصروف'); }
+    else if(k==='fno'){ const f=S.finance.find(z=>z.id===id); S.finance=S.finance.filter(z=>z.id!==id); addLog('رفض صرف', f.by||'', f.cat+' '+money(f.amount)); commit(); toast('رفضت المصروف'); }
+    else if(k==='aremind'){ const m=emp(id); sendWA([m], 'صباح الخير '+m.short+'، ما سجّلت دخولك اليوم. كل شي تمام؟ لو وصلت ابعت «وصلت».', {logAct:'تذكير دخول', okMsg:'وصل التذكير لـ'+m.short}); }
+    else if(k==='ipen'){ openPenalty(id); }
+    else if(k==='inone'){ resolveIssue(id, 'none', null, ''); }
+    else if(k==='absent'){ const m=emp(id); const r=S.rules.find(z=>z.type==='غياب بدون عذر'); S.attendance.push({date:today(),emp:id,in:null,out:null,absent:true}); S.violations.push({id:uid('v'),date:today(),emp:id,type:'غياب بدون عذر',desc:'ما سجّل ولا بلّغ',amount:r?r.amount:0,status:'review'}); addLog('تسجيل غياب', m.short, ''); commit(); toast('سجّلت غياب '+m.short); }
+  },
+  editKpis(){ openKpis(); },
+  saveKpis(){ const w=weekly(); const g=k=>{ const v=val('#k_'+k); return v===''?null:Number(toLatinDigits(v)); }; const r=g('retention'); w.retention = r==null?null:r/100; w.newClients=g('newClients'); w.downtime=g('downtime'); w.pipeline=g('pipeline'); addLog('تحديث أرقام الأسبوع', me().short, ''); closeModal(); commit(); toast('انحفظت أرقام الأسبوع'); },
+  saveFin(){
+    const amount = Number(toLatinDigits(val('#f_amt')));
+    if(!amount || amount<=0){ markErr('fld_amt'); toast('اكتب المبلغ',{err:true}); return; }
+    const by = ui.role==='manager'?me().short:emp(ui.role).short;
+    const pending = M.kind==='out' && ui.role!=='manager' && amount>S.settings.expenseLimit;
+    const f = {id:uid('f'), date:today(), kind:M.kind, cat:M.cat||'أخرى', amount, note:val('#f_note'), by};
+    if(pending) f.pending = true;
+    S.finance.push(f); addLog('إدخال مالي', by, (M.kind==='in'?'إيراد ':'مصروف ')+f.cat+' '+money(amount)+(pending?' · بانتظار موافقة':''));
+    closeModal(); commit();
+    toast((f.kind==='in'?'انسجل إيراد ':'انسجل مصروف ')+money(amount)+(pending?' · بانتظار موافقة المدير':''));
+  },
+  finMenu(d){ const f=S.finance.find(z=>z.id===d.id); if(!f) return; openConfirm('نحذف '+(f.kind==='in'?'إيراد':'مصروف')+' '+f.cat+' '+money(f.amount)+'؟', 'delFin', d.id); },
+  saveViol(){
+    if(!M.emp){ markErr('fld_emp'); toast('اختار الموظف',{err:true}); return; }
+    const type=val('#f_vtype'); const rule=S.rules.find(r=>r.type===type); const amount=rule?rule.amount:0;
+    const notify = !!($('#f_vsend') && $('#f_vsend').checked);
+    S.violations.push({id:uid('v'), date:today(), emp:M.emp, type, desc:val('#f_vdesc'), amount, status:'confirmed'});
+    addLog('مخالفة', emp(M.emp).short, type+' · '+amount+' ₪');
+    const e=emp(M.emp); closeModal(); commit();
+    if(notify) sendWA([e], e.short+'، تسجّلت عليك مخالفة: '+type+(amount?' بخصم '+amount+' شيكل':'')+' حسب نظام الشركة. لو عندك عذر بلّغ المدير اليوم.', {logAct:'تبليغ مخالفة', logNote:type, okMsg:'سجّلت المخالفة وبلّغت '+e.short});
+    else toast('سجّلت المخالفة');
+  },
+  teamDetail(d){ openTeamDetail(d.id); M.type='team'; },
+  mCheckin(d){ closeModal(); doCheckin(d.id); },
+  mCheckout(d){ closeModal(); doCheckout(d.id); },
+  checkin(d){ doCheckin(d.id); },
+  checkout(d){ doCheckout(d.id); },
+  empTask(d){ openEmpTask(d.id); },
+  empStart(d){ const x=S.tasks.find(t=>t.id===d.id); x.status='doing'; addLog('بدء مهمة', emp(x.emp).short, x.id); closeModal(); commit(); toast('بالتوفيق'); },
+  empDone(d){ openEmpDone(d.id); },
+  empDoneSave(){ const id=M.id; const note=val('#f_proof'); closeModal(); markDone(id, note, emp(ui.role).short); },
+  rtype(d){ ui.rtype=d.k; ui.rdate=today(); render(); },
+  rdate(d){ const step = ui.rtype==='daily'?1:7; const nd=addDays(ui.rdate, Number(d.k)*step); if(ui.rtype==='daily' && nd>today()) return; if(ui.rtype==='weekly' && weekStart(nd)>weekStart(today())) return; ui.rdate=nd; render(); },
+  copyReport(){ copyText(reportText(buildReport(ui.rtype, ui.rdate, ui.remp||null))); },
+  printReport(){ $('#printArea').innerHTML = reportHTML(buildReport(ui.rtype, ui.rdate, ui.remp||null)); try{ window.print(); }catch(e){ toast('الطباعة مش متاحة هنا',{err:true}); } },
+  editPri(d){ openPri(d.id); },
+  savePri(){ const p=pri(M.id); p.title=val('#p_title')||p.title; p.goal=val('#p_goal'); p.owner=M.owner; p.due=val('#p_due')||p.due; addLog('تعديل الاستراتيجية', me().short, p.title); closeModal(); commit(); toast('انحفظت الأولوية'); },
+  saveTargets(){ const n=id=>Number(val('#'+id))||0; S.targets={revenue:n('tg_revenue'), retention:n('tg_retention')/100, newClients:n('tg_newClients'), downtime:n('tg_downtime'), pipeline:n('tg_pipeline')}; addLog('تعديل الأهداف', me().short, ''); commit(); toast('انحفظت الأهداف'); },
+  saveRules(){ S.settings.start=val('#st_start')||S.settings.start; S.settings.grace=Number(val('#st_grace'))||0; S.settings.expenseLimit=Number(val('#st_lim'))||0; addLog('تعديل القواعد', me().short, ''); commit(); toast('انحفظت القواعد'); },
+  saveFines(){ S.rules.forEach((r,i)=>{ const v=val('#rl_'+i); if(v!=='') r.amount=Number(v)||0; }); addLog('تعديل الخصومات', me().short, ''); commit(); toast('انحفظت الخصومات'); },
+  async toggleMember(d){
+    const m=emp(d.id); const next=!m.active;
+    if(db.on() && m.airId){ try{ await db.setActive(m, next); }catch(e){ toast('ما انحفظ في قاعدة البيانات: '+e.message,{err:true}); return; } }
+    m.active=next; addLog(next?'تفعيل موظف':'إيقاف موظف', m.short, db.on()?'في قاعدة البيانات':''); closeModal(); commit(); toast((next?'رجع ':'توقف ')+m.short); pushTeamSoon();
+  },
+  addMemberModal(){ openAddMember(); },
+  async addMember(){
+    const name=val('#nm_name'), phone=toLatinDigits(val('#nm_phone')).replace(/\D/g,'');
+    if(!name){ markErr('fld_nm'); toast('اكتب الاسم',{err:true}); return; }
+    if(db.on() && !phone){ markErr('fld_ph'); toast('رقم الواتساب لازم، البوت بيعرف الموظف من رقمه',{err:true}); return; }
+    if(phone && !realPhone(phone)){ markErr('fld_ph'); toast('اكتب الرقم مع رمز الدولة، مثل 970599123456',{err:true}); return; }
+    const short=name.split(/\s+/)[0]; const m={id:uid('m'),name,short,role:val('#nm_role')||'موظف',phone,active:true,color:PALETTE[listTeam().length%PALETTE.length],aliases:[short]};
+    if(db.on()){ const b=$('#modal [data-act="addMember"]'); if(b){ b.disabled=true; b.textContent='جارٍ الحفظ…'; } try{ m.airId = await db.addPerson(m); }catch(e){ if(b){ b.disabled=false; b.textContent='أضف للفريق'; } toast('ما انحفظ في قاعدة البيانات: '+e.message,{err:true}); return; } }
+    S.team.push(m); addLog('إضافة موظف', short, db.on()?'في قاعدة البيانات':''); closeModal(); commit(); toast('انضاف '+short+' للفريق'+(db.on()?' وقاعدة البيانات':'')); pushTeamSoon();
+  },
+  delMember(d){ const m=emp(d.id); openConfirm('نحذف '+m.short+' من الفريق'+(db.on()&&m.airId?' ومن قاعدة البيانات':'')+'؟ مهامه القديمة بتضل في السجل.', 'delMember', d.id); },
+  msg(d){ openMsg(d.id); },
+  msgAll(){ openMsg(null); },
+  msgTpl(d){ const t=$('#f_msg'); if(t){ t.value=d.t; t.focus(); } },
+  async msgSend(){
+    const text=val('#f_msg'); if(!text){ markErr('fld_msg'); return; }
+    const targets = M.id ? [emp(M.id)] : staff();
+    const b=$('#modal [data-act="msgSend"]'); const lbl=b?b.innerHTML:''; if(b){ b.disabled=true; b.textContent='جارٍ الإرسال…'; }
+    const r = await sendWA(targets, text, {logAct:M.id?'رسالة':'رسالة للفريق', logWho:M.id?emp(M.id).short:'الفريق'});
+    if(r.ok) closeModal(); else if(b && b.isConnected){ b.disabled=false; b.innerHTML=lbl; }
+  },
+  reportSend(){ openReportSend(); },
+  async rsendGo(){
+    const to=M.to, text=M.text; const people = to==='me' ? [me()] : to==='team' ? staff() : [emp(to)];
+    const b=$('#modal [data-act="rsendGo"]'); const lbl=b?b.innerHTML:''; if(b){ b.disabled=true; b.textContent='جارٍ الإرسال…'; }
+    const r = await sendWA(people, text, {logAct:'إرسال تقرير', logWho: to==='me'?me().short:to==='team'?'الفريق':emp(to).short, logNote:text.split('\n')[0]});
+    if(r.ok) closeModal(); else if(b && b.isConnected){ b.disabled=false; b.innerHTML=lbl; }
+  },
+  editMember(d){ openEditMember(d.id); },
+  async saveMember(){
+    const m=emp(M.id); if(!m || !m.name) return;
+    const name=val('#nm_name'), role=val('#nm_role'), phone=cleanPhone(val('#nm_phone'));
+    if(!name){ markErr('fld_nm'); toast('اكتب الاسم',{err:true}); return; }
+    if(phone && !realPhone(phone)){ markErr('fld_ph'); toast('اكتب الرقم مع رمز الدولة، مثل 970599123456',{err:true}); return; }
+    const u = {name, short:name.split(/\s+/)[0]||name, role:role||m.role, phone: phone || m.phone || '', start: val('#nm_start') || '', female: M.female==='1'};
+    let note = '';
+    if(db.on() && m.airId){ const b=$('#modal [data-act="saveMember"]'); if(b){ b.disabled=true; b.textContent='جارٍ الحفظ…'; } try { await db.updatePerson(m, u); } catch(e){ note = ' · على هذا الجهاز فقط، قاعدة البيانات ما ردّت'; } }
+    Object.assign(m, u); if(!(m.aliases||[]).includes(m.short)) m.aliases = (m.aliases||[]).concat(m.short);
+    addLog('تعديل موظف', m.short, realPhone(m.phone)?'رقم واتساب محدّث':''); closeModal(); commit(); toast('انحفظ '+m.short+note, note?{err:true}:{}); pushTeamSoon();
+  },
+  goSettings(){ ui.role='manager'; ui.view='settings'; closeModal(); render(); setTimeout(()=>{ const x=$('#botSec'); if(x && x.scrollIntoView) x.scrollIntoView({behavior:'smooth', block:'start'}); const i=$('#bot_secret'); if(i && !i.value && window.innerWidth>760) i.focus(); }, 60); },
+  waLink(){ openWaLink(); },
+  wtask(d){ openWTask(d.id); },
+  async savePenalty(){
+    const issueId = M.issueId, empId = M.emp;
+    const it = (S.issues||[]).find(i=>i.id===issueId); const m = emp(empId);
+    const type = M.ptype || 'تأخير مهمة', amount = Number(val('#p_amt'))||0, note = val('#p_note');
+    const send = !!($('#p_send') && $('#p_send').checked);
+    S.violations.push({id:uid('v'), date:today(), emp:empId, type, desc:(it?it.task:'')+(it&&it.text?' · '+it.text:'')+(note?' · '+note:''), amount, status:'confirmed', issueId});
+    addLog('عقوبة', m.short, type+' · '+amount+' ₪'+(it?' · '+it.task:''));
+    closeModal();
+    await resolveIssue(issueId, 'penalty', {type, amount}, note);
+    if(send) sendWA([m], m.short+'، تسجّلت عليك عقوبة: '+type+(amount?' ('+amount+' شيكل)':'')+(it?'\nبخصوص: '+it.task+(it.text?'\nالسبب اللي كتبته: '+it.text:''):'')+(note?'\n'+note:'')+'\nلو عندك اعتراض كلّم المدير.', {logAct:'تبليغ عقوبة', okMsg:'سجّلت العقوبة وبلّغت '+m.short});
+    else toast('سجّلت العقوبة على '+m.short);
+  },
+  saveRemind(){ const st=S.settings; st.remindTasks=!!($('#rm_tasks')&&$('#rm_tasks').checked); st.remindCheckin=!!($('#rm_checkin')&&$('#rm_checkin').checked); st.remindSummary=!!($('#rm_summary')&&$('#rm_summary').checked); st.summaryAt=val('#rm_at')||st.summaryAt; st.eod=val('#rm_eod')||st.eod; addLog('تعديل التذكيرات', me().short, ''); commit(); toast('انحفظت التذكيرات'); },
+  attSync(){ syncAttendance(false); },
+  addFromGroup(d){ openAddMember({phone:d.phone}); },
+  goGroup(){ ui.role='manager'; ui.view='settings'; closeModal(); render(); setTimeout(()=>{ const x=$('#grpSec'); if(x && x.scrollIntoView) x.scrollIntoView({behavior:'smooth', block:'start'}); }, 60); },
+  dbSave(){ S.db.pat=val('#db_pat'); S.db.base=val('#db_base'); S.db.table=val('#db_table')||'People'; save(); if(db.on()){ ui.dbStatus='جارٍ الاتصال…'; render(); dbRefresh(); } else { ui.dbStatus=''; render(); toast('اكتب الـ Token والـ Base ID',{err:true}); } },
+  dbPull(){ dbRefresh(); },
+  dbOff(){ S.db.pat=''; S.db.base=''; ui.dbStatus=''; S.team.forEach(m=>{ delete m.airId; }); addLog('فصل قاعدة البيانات', me().short, ''); commit(); toast('انفصلت. البيانات صارت على هذا الجهاز فقط'); },
+  botSave(){ S.db.botUrl=(val('#bot_url')||BOT_DEFAULT).replace(/\/+$/,''); S.db.botSecret=val('#bot_secret'); ui.wa={status:'', me:''}; save(); render(); if(db.bot()) botBoot(false); else toast('الصق المفتاح أولاً',{err:true}); },
+  botTest(){ ui.wa={status:'', me:''}; renderKeep(); waPing(false); },
+  csv(d){
+    const t = today();
+    if(d.k==='tasks') download('zimam-tasks-'+t+'.csv', csv([['رقم','الموظف','المهمة','لماذا مهمة','الأولوية','الموعد','الحالة','أُنشئت','أُنجزت','ملاحظات']].concat(S.tasks.map(x=>[x.id,emp(x.emp).name,x.title,x.why,(pri(x.pri)||{}).title||'',x.due,ST_LABEL[tStatus(x)],x.created,x.doneAt||'',x.notes]))));
+    if(d.k==='finance') download('zimam-finance-'+t+'.csv', csv([['التاريخ','النوع','الفئة','المبلغ','التفاصيل','أدخلها','الحالة']].concat(S.finance.slice().sort((a,b)=>a.date<b.date?-1:1).map(f=>[f.date,f.kind==='in'?'إيراد':'مصروف',f.cat,f.amount,f.note,f.by,f.pending?'بانتظار موافقة':'معتمد']))));
+    if(d.k==='attendance') download('zimam-attendance-'+t+'.csv', csv([['التاريخ','الموظف','الدخول','الخروج','الحالة']].concat(S.attendance.slice().sort((a,b)=>a.date<b.date?-1:1).map(r=>[r.date,emp(r.emp).name,r.in||'',r.out||'',r.in?({on:'في الوقت',slight:'تأخير بسيط',late:'متأخر'})[classify(r.in, r.emp)]:'غائب']))));
+  },
+  resetDemo(){ openConfirm(DEMO?'نرجّع البيانات التجريبية؟':'نمسح كل المهام والحضور والمالية ونبدأ من جديد؟', 'reset'); }
+};
+const CONFIRM = {
+  async delMember(id){
+    const m=emp(id);
+    if(db.on() && m.airId){ try{ await db.deletePerson(m); }catch(e){ toast('ما انحذف من قاعدة البيانات: '+e.message,{err:true}); return; } }
+    m.deleted=true; m.active=false; delete m.airId; addLog('حذف موظف', m.short, db.on()?'من قاعدة البيانات':''); commit(); toast('انحذف '+m.short+' من الفريق'); pushTeamSoon();
+  },
+  delTask(id){ S.tasks=S.tasks.filter(t=>t.id!==id); addLog('حذف مهمة', me().short, id); commit(); toast('انحذفت المهمة'); },
+  delFin(id){ S.finance=S.finance.filter(f=>f.id!==id); addLog('حذف عملية مالية', me().short, ''); commit(); toast('انحذفت العملية'); },
+  reset(){ const keep=S.db||{}; S = DEMO?demoSeed():cleanSeed(); if(keep.botSecret){ S.db.botSecret=keep.botSecret; S.db.botUrl=keep.botUrl||BOT_DEFAULT; } ui.view='home'; ui.role='manager'; save(); render(); toast(DEMO?'رجعت البيانات التجريبية':'بدأنا من جديد'); if(!DEMO) pushTeamSoon(); }
+};
+
+/* ===================== command parser ===================== */
+function findMember(text){
+  let best=null;
+  activeTeam().forEach(m=>{ (m.aliases&&m.aliases.length?m.aliases:[m.short]).forEach(a=>{
+    const re = new RegExp('(^|\\s)(?:لـ?\\s?|إلى\\s|الى\\s|عند\\s|مع\\s)?'+a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?=$|\\s|[،,:.؟?!])');
+    const mm = text.match(re); if(mm && (!best || mm[0].length>best.len)) best={m, match:mm[0], len:mm[0].length};
+  }); });
+  return best;
+}
+function parseDue(text){
+  const t = today();
+  const DAYMAP = {'أحد':0,'احد':0,'إثنين':1,'اثنين':1,'ثلاثاء':2,'ثلاثا':2,'أربعاء':3,'اربعاء':3,'خميس':4,'جمعة':5,'جمعه':5,'سبت':6};
+  const B = '(?:^|\\s)', E = '(?=$|\\s|[،,.؟?!])';
+  const R = s => new RegExp(B+s+E);
+  const pats = [
+    [R('بعد\\s*(\\d+)\\s*(?:أيام|ايام|يوم)'), m=>addDays(t,Number(m[1]))],
+    [R('بعد\\s*(?:بكرا|بكرة|بكره|غد|غدا|غداً)'), ()=>addDays(t,2)],
+    [R('(?:بكرا|بكرة|بكره|غدا|غداً|بكرى)'), ()=>addDays(t,1)],
+    [R('(?:اليوم|هلأ|هلق|الآن|الان)'), ()=>t],
+    [R('(?:الأسبوع|الاسبوع)\\s*(?:الجاي|القادم|الجاية)'), ()=>addDays(t,7)],
+    [R('(?:يوم\\s*)?ال(أحد|احد|إثنين|اثنين|ثلاثاء|ثلاثا|أربعاء|اربعاء|خميس|جمعة|جمعه|سبت)(?:\\s*(الجاي|القادم))?'), m=>{ let n=(DAYMAP[m[1]]-dow(t)+7)%7; if(n===0) n=7; return addDays(t,n); }]
+  ];
+  for(const [re,f] of pats){ const m=text.match(re); if(m) return {due:f(m), match:m[0]}; }
+  return null;
+}
+function catOf(kind, text){
+  const map = kind==='in'
+    ? [[/شهري|شهر/,'اشتراك شهري'],[/يومي|زائر|زوار|اشتراك يوم/,'اشتراك يومي'],[/قاعة|قاعه|ورشة|ورشه|محاضرة|محاضره/,'تأجير قاعة'],[/دورة|دوره|كورس|أكاديمية|اكاديمية/,'دورة'],[/تمكين|تمويل|منحة|منحه/,'منحة']]
+    : [[/إيجار|ايجار/,'إيجار'],[/كهرباء|كهربا/,'كهرباء'],[/(^|\s)نت($|\s)|إنترنت|انترنت/,'إنترنت'],[/راتب|رواتب/,'رواتب'],[/تسويق|إعلان|اعلان|ممول|تصوير/,'تسويق'],[/صيانة|صيانه|تصليح/,'صيانة'],[/قهوة|قهوه|ورق|مستلزمات|ضيافة|كراسي|طاولة/,'مستلزمات']];
+  for(const [re,c] of map) if(re.test(text)) return c;
+  return 'أخرى';
+}
+function ruleParse(raw){
+  const text = toLatinDigits(raw).trim().replace(/\s+/g,' ');
+  if(!text) return null;
+  const num = text.match(/(\d+(?:[.,]\d+)?)/);
+  const W = s => new RegExp('(?:^|\\s)(?:'+s+')(?=$|\\s|[،,.؟?!])');
+  const taskKw = W('مهمة|مهمه|كلّف|كلف|أسند|اسند|اطلب من|خلي|خلّي|بدي من|بدّي من');
+  if(num && !taskKw.test(text) && W('إيراد|ايراد|دخل|قبضنا|استلمنا|اشتراك|دفع لنا').test(text) && !W('مصروف|صرفنا|دفعنا').test(text)){
+    const note = text.replace(num[0],'').replace(/(إيراد|ايراد|دخل|قبضنا|استلمنا|شيكل|شيقل|₪)/g,'').replace(/(اشتراك\s*)?(شهري|يومي)/,'').replace(/\s+/g,' ').trim();
+    return {type:'income', amount:Number(num[1].replace(',','.')), cat:catOf('in',text), note};
+  }
+  if(num && !taskKw.test(text) && W('مصروف|مصاريف|صرف|صرفنا|دفعنا|دفعت|اشترينا|فاتورة|فاتوره').test(text)){
+    const note = text.replace(num[0],'').replace(/(مصروف|مصاريف|صرفنا|صرف|دفعنا|دفعت|اشترينا|شيكل|شيقل|₪)/g,'').replace(/\s+/g,' ').trim();
+    return {type:'expense', amount:Number(num[1].replace(',','.')), cat:catOf('out',text), note};
+  }
+  const mem = findMember(text);
+  if(mem && /(وصل|وصلت|حضر|حضرت|سجل دخول|سجّل دخول)/.test(text)) return {type:'checkin', emp:mem.m.id};
+  if(/(مخالفة|مخالفه|خصم على|اخصم|إخصم)/.test(text)) return {type:'violation', emp:mem?mem.m.id:null, desc:text.replace(/(سجل|سجّل)?\s*(مخالفة|مخالفه|خصم على|اخصم|إخصم)\s*/,'').replace(mem?mem.match.trim():'','').replace(/^(على|ل)\s+/,'').trim()};
+  const isTask = taskKw.test(text);
+  if(!isTask){
+    if(/(متأخر|متاخر|التأخير|مين ما خلص)/.test(text)) return {type:'nav', view:'tasks', filter:'late'};
+    if(/تقرير/.test(text)) return {type:'nav', view:'reports', rtype:/(أسبوع|اسبوع|أسبوعي|الأسبوع)/.test(text)?'weekly':'daily'};
+    if(/(الحضور|مين جا|مين حضر|غياب|مين غايب)/.test(text)) return {type:'nav', view:'team'};
+    if(/(المالية|فلوس|الإيرادات|الايرادات|المصاريف|الربح|الصافي)/.test(text)) return {type:'nav', view:'reports', rtype:'money'};
+    if(/(الاستراتيجية|الأولويات|الاولويات|الأهداف)/.test(text)) return {type:'nav', view:'settings'};
+  }
+  if(isTask || mem){
+    let title = text;
+    if(mem) title = title.replace(mem.match,' ');
+    const due = parseDue(title);
+    if(due) title = title.replace(due.match,' ');
+    title = title.replace(/^(\s*(مهمة|مهمه|كلّف|كلف|أسند|اسند|اطلب من|خلي|خلّي|بدي من|بدّي من|جديدة|جديده)\s*)+/,'').replace(/(موعدها|موعده|قبل|لحد|حتى|يوم)\s*$/,'').replace(/^[\s:،,\-]+|[\s:،,\-]+$/g,'').replace(/\s+/g,' ').trim();
+    return {type:'task', emp:mem?mem.m.id:null, title, due:due?due.due:addDays(today(),1)};
+  }
+  return null;
+}
+async function aiParse(text){
+  const cw = window.cowork; if(!cw || typeof cw.askClaude!=='function') return null;
+  const prompt = 'حوّل أمر المدير إلى JSON فقط بدون أي نص آخر. الصيغ المسموحة: {"type":"task","emp":"<id>","title":"...","due":"YYYY-MM-DD"} أو {"type":"income"|"expense","amount":<رقم>,"cat":"<فئة من القائمة>","note":"..."} أو {"type":"nav","view":"home|tasks|team|reports|settings"} أو {"type":"none"}. تاريخ اليوم '+today()+'. الأمر: '+text;
+  try {
+    let r = await cw.askClaude(prompt, [{team:activeTeam().map(m=>({id:m.id,name:m.name})), incomeCats:CATS.in, expenseCats:CATS.out}]);
+    if(r && r.isError) return null;
+    if(typeof r!=='string') r = (r&&(r.text||(r.content&&r.content[0]&&r.content[0].text)))||'';
+    const m = String(r).match(/\{[\s\S]*\}/); if(!m) return null;
+    const j = JSON.parse(m[0]); return j && j.type && j.type!=='none' ? j : null;
+  } catch(e){ return null; }
+}
+async function runCmd(q){
+  q = (q||'').trim(); if(!q) return;
+  let c = ruleParse(q);
+  if(!c){ const btn=$('.ask-go'); if(btn) btn.disabled=true; c = await aiParse(q); if(btn) btn.disabled=false; }
+  if(!c){ toast('ما فهمت. جرّب: «مهمة لـ'+((staff()[0]||{short:'أحمد'}).short)+' …» أو «إيراد 200 قاعة»',{err:true}); return; }
+  const i=$('#cmdInput'); if(i) i.value='';
+  if(c.type==='task') openTask({emp:c.emp&&S.team.some(m=>m.id===c.emp)?c.emp:null, title:c.title||'', due:c.due||addDays(today(),1)});
+  else if(c.type==='income'||c.type==='expense') openFin(c.type==='income'?'in':'out', {amount:c.amount, note:c.note||'', cat:CATS[c.type==='income'?'in':'out'].includes(c.cat)?c.cat:null});
+  else if(c.type==='checkin') doCheckin(c.emp);
+  else if(c.type==='violation') openViol({emp:c.emp, desc:c.desc});
+  else if(c.type==='nav'){ ui.view=c.view==='finance'?'reports':c.view; if(c.view==='finance') ui.rtype='money'; if(c.filter) ui.taskFilter=c.filter; if(c.rtype){ ui.rtype=c.rtype; ui.rdate=today(); } render(); window.scrollTo(0,0); }
+}
+
+/* ===================== events ===================== */
+document.addEventListener('click', e=>{
+  const el = e.target.closest('[data-act]');
+  if(!el || el.tagName==='A') return;
+  if(e.target.closest('a')) return;
+  const act = el.dataset.act;
+  if(act==='closeModal' && el.classList.contains('ov') && e.target!==el) return;
+  const fn = H[act]; if(fn){ e.preventDefault(); const tt = el.closest('.tst'); if(tt) tt.remove(); fn(el.dataset, el, e); }
+});
+document.addEventListener('submit', e=>{ if(e.target.id==='cmdForm'){ e.preventDefault(); const i=$('#cmdInput'); runCmd(i?i.value:''); } });
+document.addEventListener('change', e=>{
+  const id = e.target.id;
+  if(id==='f_due'){ M.due=e.target.value; $$('[data-g="due"]',$('#modal')).forEach(c=>c.classList.toggle('on',c.dataset.v===M.due)); }
+  if(id==='f_pri'){ const w=$('#f_why'); const p=pri(e.target.value); if(w && !w.value.trim() && p) w.value='تخدم أولوية '+p.title+': '+p.goal; }
+  if(id==='tEmpSel'){ ui.taskEmp=e.target.value; render(); }
+  if(id==='rEmpSel'){ ui.remp=e.target.value; render(); }
+  if(id==='fperSel'){ ui.fper=e.target.value; render(); }
+});
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && $('#modal').innerHTML) closeModal();
+  if(e.key==='Enter' && e.target && ['f_title','f_amt','f_note'].includes(e.target.id)){ e.preventDefault(); const b=$('#modal [data-act="saveTask"],#modal [data-act="saveFin"]'); if(b) b.click(); }
+});
+
+render();
+if(db.on()){ ui.dbStatus='جارٍ الاتصال…'; dbRefresh(true); }
+if(db.bot()) botBoot(true);
+setInterval(()=>{ if(db.bot() && document.visibilityState!=='hidden' && ui.wa.status!=='ERR') syncAttendance(true); }, 60000);
+window.addEventListener('focus', ()=>{ if(db.bot() && ui.wa.status!=='ERR') syncAttendance(true); });
+window.__zimam = {S:()=>S, ui, H, ruleParse, buildReport, reportText, render, db, mergePeople, sendWA, waPing, realPhone, syncAttendance, pushTeam, botBoot, pushState, pullState, resolveIssue};
+})();
+</script>
+</body>
+</html>

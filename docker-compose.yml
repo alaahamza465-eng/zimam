@@ -1,0 +1,53 @@
+services:
+  waha:
+    image: devlikeapro/waha:latest
+    container_name: zimam-waha
+    restart: unless-stopped
+    environment:
+      WAHA_API_KEY: ${WAHA_API_KEY}
+      WHATSAPP_DEFAULT_ENGINE: WEBJS
+      WAHA_PRINT_QR: "false"
+      WHATSAPP_RESTART_ALL_SESSIONS: "true"
+    volumes:
+      - waha_sessions:/app/.sessions
+
+  zimam:
+    build: ./server
+    container_name: zimam
+    restart: unless-stopped
+    environment:
+      WAHA_URL: http://waha:3000
+      WAHA_API_KEY: ${WAHA_API_KEY}
+      WAHA_WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+      ADMIN_SECRET: ${ADMIN_SECRET}
+      SELF_URL: http://zimam:3030
+      PUBLIC_URL: https://${DOMAIN}/app
+      TZ_NAME: ${TZ_NAME:-Asia/Riyadh}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      DATA_DIR: /data
+    volumes:
+      - zimam_data:/data
+    depends_on:
+      - waha
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: zimam-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - zimam
+
+volumes:
+  waha_sessions:
+  zimam_data:
+  caddy_data:
+  caddy_config:
